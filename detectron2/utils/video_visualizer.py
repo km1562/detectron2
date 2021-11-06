@@ -14,7 +14,7 @@ from .colormap import random_color
 
 class _DetectedInstance:
     """
-    Used to store data about detected objects in video frame,
+    Used to store datas about detected objects in video frame,
     in order to transfer color to objects in the future frames.
 
     Attributes:
@@ -113,7 +113,7 @@ class VideoVisualizer:
         """
         Args:
             sem_seg (ndarray or Tensor): semantic segmentation of shape (H, W),
-                each value is the integer label.
+                each value is the integer ori_annotation_file.
             area_threshold (Optional[int]): only draw segmentations larger than the threshold
         """
         # don't need to do anything special
@@ -204,10 +204,10 @@ class VideoVisualizer:
         if len(ious) == 0:
             ious = np.zeros((len(self._old_instances), len(instances)), dtype="float32")
 
-        # Only allow matching instances of the same label:
+        # Only allow matching instances of the same ori_annotation_file:
         for old_idx, old in enumerate(self._old_instances):
             for new_idx, new in enumerate(instances):
-                if old.label != new.label:
+                if old.ori_annotation_file != new.ori_annotation_file:
                     ious[old_idx, new_idx] = 0
 
         matched_new_per_old = np.asarray(ious).argmax(axis=1)

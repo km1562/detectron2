@@ -78,7 +78,7 @@ class InferenceAction(Action):
         super(InferenceAction, cls).add_arguments(parser)
         parser.add_argument("cfg", metavar="<config>", help="Config file")
         parser.add_argument("model", metavar="<model>", help="Model file")
-        parser.add_argument("input", metavar="<input>", help="Input data")
+        parser.add_argument("input", metavar="<input>", help="Input datas")
         parser.add_argument(
             "--opts",
             help="Modify config options using the command-line 'KEY VALUE' pairs",
@@ -93,7 +93,7 @@ class InferenceAction(Action):
         cfg = cls.setup_config(args.cfg, args.model, args, opts)
         logger.info(f"Loading model from {args.model}")
         predictor = DefaultPredictor(cfg)
-        logger.info(f"Loading data from {args.input}")
+        logger.info(f"Loading datas from {args.input}")
         file_list = cls._get_input_file_list(args.input)
         if len(file_list) == 0:
             logger.warning(f"No input images for {args.input}")

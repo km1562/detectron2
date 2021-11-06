@@ -40,7 +40,7 @@ def mask_rcnn_loss(pred_mask_logits: torch.Tensor, instances: List[Instances], v
             and width of the mask predictions. The values are logits.
         instances (list[Instances]): A list of N Instances, where N is the number of images
             in the batch. These instances are in 1:1
-            correspondence with the pred_mask_logits. The ground-truth labels (class, box, mask,
+            correspondence with the pred_mask_logits. The ground-truth ori_annotation_file_list (class, box, mask,
             ...) associated with each instance are stored in fields.
         vis_period (int): the period (in steps) to dump visualization.
 
@@ -178,7 +178,7 @@ class BaseMaskRCNNHead(nn.Module):
         """
         Args:
             x: input region feature(s) provided by :class:`ROIHeads`.
-            instances (list[Instances]): contains the boxes & labels corresponding
+            instances (list[Instances]): contains the boxes & ori_annotation_file_list corresponding
                 to the input features.
                 Exact format is up to its caller to decide.
                 Typically, this is the foreground instances in training, with

@@ -8,7 +8,7 @@ import torch
 @dataclass
 class DensePoseEmbeddingPredictorOutput:
     """
-    Predictor output that contains embedding and coarse segmentation data:
+    Predictor output that contains embedding and coarse segmentation datas:
      * embedding: float tensor of size [N, D, H, W], contains estimated embeddings
      * coarse_segm: float tensor of size [N, K, H, W]
     Here D = MODEL.ROI_DENSEPOSE_HEAD.CSE.EMBED_SIZE

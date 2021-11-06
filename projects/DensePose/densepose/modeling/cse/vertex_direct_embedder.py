@@ -50,10 +50,10 @@ class VertexDirectEmbedder(nn.Module):
     @torch.no_grad()  # pyre-ignore[56]
     def load(self, fpath: str):
         """
-        Load data from a file
+        Load datas from a file
 
         Args:
-            fpath (str): file path to load data from
+            fpath (str): file path to load datas from
         """
         with PathManager.open(fpath, "rb") as hFile:
             data = pickle.load(hFile)  # pyre-ignore[6]

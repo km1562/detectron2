@@ -10,7 +10,7 @@ Install Detectron2 following [the instructions](https://detectron2.readthedocs.i
 To train a model with 8 GPUs run:
 ```bash
 cd /path/to/detectron2/projects/DeepLab
-python train_net.py --config-file configs/Cityscapes-SemanticSegmentation/deeplab_v3_plus_R_103_os16_mg124_poly_90k_bs16.yaml --num-gpus 8
+python train_net_pycallgraph.py --config-file configs/Cityscapes-SemanticSegmentation/deeplab_v3_plus_R_103_os16_mg124_poly_90k_bs16.yaml --num-gpus 8
 ```
 
 ## Evaluation
@@ -18,7 +18,7 @@ python train_net.py --config-file configs/Cityscapes-SemanticSegmentation/deepla
 Model evaluation can be done similarly:
 ```bash
 cd /path/to/detectron2/projects/DeepLab
-python train_net.py --config-file configs/Cityscapes-SemanticSegmentation/deeplab_v3_plus_R_103_os16_mg124_poly_90k_bs16.yaml --eval-only MODEL.WEIGHTS /path/to/model_checkpoint
+python train_net_pycallgraph.py --config-file configs/Cityscapes-SemanticSegmentation/deeplab_v3_plus_R_103_os16_mg124_poly_90k_bs16.yaml --eval-only MODEL.WEIGHTS /path/to/model_checkpoint
 ```
 
 ## Cityscapes Semantic Segmentation

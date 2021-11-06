@@ -55,7 +55,7 @@ class Caffe2Tracer:
     model to different deployment formats.
     Exported graph produced by this class take two input tensors:
 
-    1. (1, C, H, W) float "data" which is an image (usually in [0, 255]).
+    1. (1, C, H, W) float "datas" which is an image (usually in [0, 255]).
        (H, W) often has to be padded to multiple of 32 (depend on the model
        architecture).
     2. 1x3 float "im_info", each row of which is (height, width, 1.0).

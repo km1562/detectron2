@@ -21,7 +21,7 @@ from .utils import (
 class DensePoseChartLoss:
     """
     DensePose loss for chart-based training. A mesh is split into charts,
-    each chart is given a label (I) and parametrized by 2 coordinates referred to
+    each chart is given a ori_annotation_file (I) and parametrized by 2 coordinates referred to
     as U and V. Ground truth consists of a number of points annotated with
     I, U and V values and coarse segmentation S defined for all pixels of the
     object bounding box. In some cases (see `COARSE_SEGM_TRAINED_BY_MASKS`),
@@ -31,11 +31,11 @@ class DensePoseChartLoss:
      * U coordinates, tensor of shape [N, C, S, S]
      * V coordinates, tensor of shape [N, C, S, S]
      * fine segmentation estimates, tensor of shape [N, C, S, S] with raw unnormalized
-       scores for each fine segmentation label at each location
+       scores for each fine segmentation ori_annotation_file at each location
      * coarse segmentation estimates, tensor of shape [N, D, S, S] with raw unnormalized
-       scores for each coarse segmentation label at each location
+       scores for each coarse segmentation ori_annotation_file at each location
     where N is the number of detections, C is the number of fine segmentation
-    labels, S is the estimate size ( = width = height) and D is the number of
+    ori_annotation_file_list, S is the estimate size ( = width = height) and D is the number of
     coarse segmentation channels.
 
     The losses are:
@@ -68,15 +68,15 @@ class DensePoseChartLoss:
         Produce chart-based DensePose losses
 
         Args:
-            proposals_with_gt (list of Instances): detections with associated ground truth data
+            proposals_with_gt (list of Instances): detections with associated ground truth datas
             densepose_predictor_outputs: an object of a dataclass that contains predictor outputs
                 with estimated values; assumed to have the following attributes:
                 * coarse_segm - coarse segmentation estimates, tensor of shape [N, D, S, S]
                 * fine_segm - fine segmentation estimates, tensor of shape [N, C, S, S]
-                * u - U coordinate estimates per fine labels, tensor of shape [N, C, S, S]
-                * v - V coordinate estimates per fine labels, tensor of shape [N, C, S, S]
+                * u - U coordinate estimates per fine ori_annotation_file_list, tensor of shape [N, C, S, S]
+                * v - V coordinate estimates per fine ori_annotation_file_list, tensor of shape [N, C, S, S]
             where N is the number of detections, C is the number of fine segmentation
-            labels, S is the estimate size ( = width = height) and D is the number of
+            ori_annotation_file_list, S is the estimate size ( = width = height) and D is the number of
             coarse segmentation channels.
 
         Return:
@@ -84,9 +84,9 @@ class DensePoseChartLoss:
              * `loss_densepose_U`: smooth L1 loss for U coordinate estimates
              * `loss_densepose_V`: smooth L1 loss for V coordinate estimates
              * `loss_densepose_I`: cross entropy for raw unnormalized scores for fine
-                 segmentation estimates given ground truth labels;
+                 segmentation estimates given ground truth ori_annotation_file_list;
              * `loss_densepose_S`: cross entropy for raw unnormalized scores for coarse
-                 segmentation estimates given ground truth labels;
+                 segmentation estimates given ground truth ori_annotation_file_list;
         """
         # densepose outputs are computed for all images and all bounding boxes;
         # i.e. if a batch has 4 images with (3, 1, 2, 1) proposals respectively,
@@ -99,7 +99,7 @@ class DensePoseChartLoss:
         packed_annotations = extract_packed_annotations_from_matches(proposals_with_gt, accumulator)
 
         # NOTE: we need to keep the same computation graph on all the GPUs to
-        # perform reduction properly. Hence even if we have no data on one
+        # perform reduction properly. Hence even if we have no datas on one
         # of the GPUs, we still need to generate the computation graph.
         # Add fake (zero) loss in the form Tensor.sum() * 0
         if packed_annotations is None:
@@ -138,7 +138,7 @@ class DensePoseChartLoss:
     def produce_fake_densepose_losses(self, densepose_predictor_outputs: Any) -> LossDict:
         """
         Fake losses for fine segmentation and U/V coordinates. These are used when
-        no suitable ground truth data was found in a batch. The loss has a value 0
+        no suitable ground truth datas was found in a batch. The loss has a value 0
         and is primarily used to construct the computation graph, so that
         `DistributedDataParallel` has similar graphs on all GPUs and can perform
         reduction properly.
@@ -147,8 +147,8 @@ class DensePoseChartLoss:
             densepose_predictor_outputs: DensePose predictor outputs, an object
                 of a dataclass that is assumed to have the following attributes:
              * fine_segm - fine segmentation estimates, tensor of shape [N, C, S, S]
-             * u - U coordinate estimates per fine labels, tensor of shape [N, C, S, S]
-             * v - V coordinate estimates per fine labels, tensor of shape [N, C, S, S]
+             * u - U coordinate estimates per fine ori_annotation_file_list, tensor of shape [N, C, S, S]
+             * v - V coordinate estimates per fine ori_annotation_file_list, tensor of shape [N, C, S, S]
         Return:
             dict: str -> tensor: dict of losses with the following entries:
              * `loss_densepose_U`: has value 0
@@ -163,7 +163,7 @@ class DensePoseChartLoss:
     def produce_fake_densepose_losses_uv(self, densepose_predictor_outputs: Any) -> LossDict:
         """
         Fake losses for U/V coordinates. These are used when no suitable ground
-        truth data was found in a batch. The loss has a value 0
+        truth datas was found in a batch. The loss has a value 0
         and is primarily used to construct the computation graph, so that
         `DistributedDataParallel` has similar graphs on all GPUs and can perform
         reduction properly.
@@ -171,8 +171,8 @@ class DensePoseChartLoss:
         Args:
             densepose_predictor_outputs: DensePose predictor outputs, an object
                 of a dataclass that is assumed to have the following attributes:
-             * u - U coordinate estimates per fine labels, tensor of shape [N, C, S, S]
-             * v - V coordinate estimates per fine labels, tensor of shape [N, C, S, S]
+             * u - U coordinate estimates per fine ori_annotation_file_list, tensor of shape [N, C, S, S]
+             * v - V coordinate estimates per fine ori_annotation_file_list, tensor of shape [N, C, S, S]
         Return:
             dict: str -> tensor: dict of losses with the following entries:
              * `loss_densepose_U`: has value 0
@@ -186,7 +186,7 @@ class DensePoseChartLoss:
     def produce_fake_densepose_losses_segm(self, densepose_predictor_outputs: Any) -> LossDict:
         """
         Fake losses for fine / coarse segmentation. These are used when
-        no suitable ground truth data was found in a batch. The loss has a value 0
+        no suitable ground truth datas was found in a batch. The loss has a value 0
         and is primarily used to construct the computation graph, so that
         `DistributedDataParallel` has similar graphs on all GPUs and can perform
         reduction properly.
@@ -220,11 +220,11 @@ class DensePoseChartLoss:
         estimated coordinates and the ground truth.
 
         Args:
-            proposals_with_gt (list of Instances): detections with associated ground truth data
+            proposals_with_gt (list of Instances): detections with associated ground truth datas
             densepose_predictor_outputs: DensePose predictor outputs, an object
                 of a dataclass that is assumed to have the following attributes:
-             * u - U coordinate estimates per fine labels, tensor of shape [N, C, S, S]
-             * v - V coordinate estimates per fine labels, tensor of shape [N, C, S, S]
+             * u - U coordinate estimates per fine ori_annotation_file_list, tensor of shape [N, C, S, S]
+             * v - V coordinate estimates per fine ori_annotation_file_list, tensor of shape [N, C, S, S]
         Return:
             dict: str -> tensor: dict of losses with the following entries:
              * `loss_densepose_U`: smooth L1 loss for U coordinate estimates
@@ -249,12 +249,12 @@ class DensePoseChartLoss:
     ) -> LossDict:
         """
         Losses for fine / coarse segmentation: cross-entropy
-        for segmentation unnormalized scores given ground truth labels at
+        for segmentation unnormalized scores given ground truth ori_annotation_file_list at
         annotated points for fine segmentation and dense mask annotations
         for coarse segmentation.
 
         Args:
-            proposals_with_gt (list of Instances): detections with associated ground truth data
+            proposals_with_gt (list of Instances): detections with associated ground truth datas
             densepose_predictor_outputs: DensePose predictor outputs, an object
                 of a dataclass that is assumed to have the following attributes:
              * fine_segm - fine segmentation estimates, tensor of shape [N, C, S, S]
@@ -262,12 +262,12 @@ class DensePoseChartLoss:
         Return:
             dict: str -> tensor: dict of losses with the following entries:
              * `loss_densepose_I`: cross entropy for raw unnormalized scores for fine
-                 segmentation estimates given ground truth labels
+                 segmentation estimates given ground truth ori_annotation_file_list
              * `loss_densepose_S`: cross entropy for raw unnormalized scores for coarse
-                 segmentation estimates given ground truth labels;
+                 segmentation estimates given ground truth ori_annotation_file_list;
                  may be included if coarse segmentation is only trained
                  using DensePose ground truth; if additional supervision through
-                 instance segmentation data is performed (`segm_trained_by_masks` is True),
+                 instance segmentation datas is performed (`segm_trained_by_masks` is True),
                  this loss is handled by `produce_mask_losses` instead
         """
         fine_segm_gt = packed_annotations.fine_segm_labels_gt[

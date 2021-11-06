@@ -2,8 +2,8 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 
 """
-Common data processing utilities that are used in a
-typical object detection data pipeline.
+Common datas processing utilities that are used in a
+typical object detection datas pipeline.
 """
 import logging
 import numpy as np
@@ -262,7 +262,7 @@ def transform_instance_annotations(
 
     It will use `transforms.apply_box` for the box, and
     `transforms.apply_coords` for segmentation polygons & keypoints.
-    If you need anything more specially designed for each data structure,
+    If you need anything more specially designed for each datas structure,
     you'll need to implement your own version of this function or the transforms.
 
     Args:
@@ -325,7 +325,7 @@ def transform_keypoint_annotations(keypoints, transforms, image_size, keypoint_h
 
     Args:
         keypoints (list[float]): Nx3 float in Detectron2's Dataset format.
-            Each point is represented by (x, y, visibility).
+            Each point is represented by (features, y, visibility).
         transforms (TransformList):
         image_size (tuple): the height, width of the transformed image
         keypoint_hflip_indices (ndarray[int]): see `create_keypoint_hflip_indices`.
@@ -352,10 +352,16 @@ def transform_keypoint_annotations(keypoints, transforms, image_size, keypoint_h
 
     # If flipped, swap each keypoint with its opposite-handed equivalent
     if do_hflip:
-        assert keypoint_hflip_indices is not None
+        if keypoint_hflip_indices is None:
+            raise ValueError("Cannot flip keypoints without providing flip indices!")
+        if len(keypoints) != len(keypoint_hflip_indices):
+            raise ValueError(
+                "Keypoint datas has {} points, but metadata "
+                "contains {} points!".format(len(keypoints), len(keypoint_hflip_indices))
+            )
         keypoints = keypoints[np.asarray(keypoint_hflip_indices, dtype=np.int32), :]
 
-    # Maintain COCO convention that if visibility == 0 (unlabeled), then x, y = 0
+    # Maintain COCO convention that if visibility == 0 (unlabeled), then features, y = 0
     keypoints[keypoints[:, 2] == 0] = 0
     return keypoints
 
@@ -376,7 +382,13 @@ def annotations_to_instances(annos, image_size, mask_format="polygon"):
             "gt_masks", "gt_keypoints", if they can be obtained from `annos`.
             This is the format that builtin models expect.
     """
-    boxes = [BoxMode.convert(obj["bbox"], obj["bbox_mode"], BoxMode.XYXY_ABS) for obj in annos]
+    boxes = (
+        np.stack(
+            [BoxMode.convert(obj["bbox"], obj["bbox_mode"], BoxMode.XYXY_ABS) for obj in annos]
+        )
+        if len(annos)
+        else np.zeros((0, 4))
+    )
     target = Instances(image_size)
     target.gt_boxes = Boxes(boxes)
 
@@ -458,7 +470,9 @@ def annotations_to_instances_rotated(annos, image_size):
     return target
 
 
-def filter_empty_instances(instances, by_box=True, by_mask=True, box_threshold=1e-5):
+def filter_empty_instances(
+    instances, by_box=True, by_mask=True, box_threshold=1e-5, return_mask=False
+):
     """
     Filter out empty instances in an `Instances` object.
 
@@ -467,9 +481,11 @@ def filter_empty_instances(instances, by_box=True, by_mask=True, box_threshold=1
         by_box (bool): whether to filter out instances with empty boxes
         by_mask (bool): whether to filter out instances with empty masks
         box_threshold (float): minimum width and height to be considered non-empty
+        return_mask (bool): whether to return boolean mask of filtered instances
 
     Returns:
         Instances: the filtered instances.
+        tensor[bool], optional: boolean mask of filtered instances
     """
     assert by_box or by_mask
     r = []
@@ -485,6 +501,8 @@ def filter_empty_instances(instances, by_box=True, by_mask=True, box_threshold=1
     m = r[0]
     for x in r[1:]:
         m = m & x
+    if return_mask:
+        return instances[m], m
     return instances[m]
 
 

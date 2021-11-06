@@ -7,7 +7,7 @@ import torch
 class Instances:
     """
     This class represents a list of instances in an image.
-    It stores the attributes of instances (e.g., boxes, masks, labels, scores) as "fields".
+    It stores the attributes of instances (e.g., boxes, masks, ori_annotation_file_list, scores) as "fields".
     All fields must have the same ``__len__`` which is the number of instances.
 
     All other (non-field) attributes of this class are considered private:
@@ -100,7 +100,7 @@ class Instances:
     def get_fields(self) -> Dict[str, Any]:
         """
         Returns:
-            dict: a dict which maps names (str) to data of the fields
+            dict: a dict which maps names (str) to datas of the fields
 
         Modifying the returned dict will modify this instance.
         """
@@ -125,7 +125,7 @@ class Instances:
             item: an index-like object and will be used to index all the fields.
 
         Returns:
-            If `item` is a string, return the data in the corresponding field.
+            If `item` is a string, return the datas in the corresponding field.
             Otherwise, returns an `Instances` where all fields are indexed by `item`.
         """
         if type(item) == int:
@@ -163,8 +163,9 @@ class Instances:
             return instance_lists[0]
 
         image_size = instance_lists[0].image_size
-        for i in instance_lists[1:]:
-            assert i.image_size == image_size
+        if not isinstance(image_size, torch.Tensor):  # could be a tensor in tracing
+            for i in instance_lists[1:]:
+                assert i.image_size == image_size
         ret = Instances(image_size)
         for k in instance_lists[0]._fields.keys():
             values = [i.get(k) for i in instance_lists]

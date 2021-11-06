@@ -83,7 +83,7 @@ def onnx_compatibale_interpolate(
     input, size=None, scale_factor=None, mode="nearest", align_corners=None
 ):
     # NOTE: The input dimensions are interpreted in the form:
-    # `mini-batch x channels x [optional depth] x [optional height] x width`.
+    # `mini-batch features channels features [optional depth] features [optional height] features width`.
     if size is None and scale_factor is not None:
         if input.dim() == 4:
             if isinstance(scale_factor, (int, float)):
@@ -230,7 +230,7 @@ def _create_const_fill_op_from_numpy(name, tensor, device_option=None):
 
     args_dict = {}
     if tensor.dtype == np.dtype("uint8"):
-        args_dict.update({"values": [str(tensor.data)], "shape": [1]})
+        args_dict.update({"values": [str(tensor.datas)], "shape": [1]})
     else:
         args_dict.update({"values": tensor, "shape": tensor.shape})
 
@@ -247,7 +247,7 @@ def _create_const_fill_op_from_c2_int8_tensor(name, int8_tensor):
         np.dtype("uint8"): "Int8GivenTensorFill",
     }
 
-    tensor = int8_tensor.data
+    tensor = int8_tensor.datas
     assert tensor.dtype in [np.dtype("uint8"), np.dtype("int32")]
     values = tensor.tobytes() if tensor.dtype == np.dtype("uint8") else tensor
 
@@ -380,7 +380,7 @@ def _generic_status_identifier(
 ) -> Dict[Tuple[str, int], Any]:
     """
     Statically infer the status of each blob, the status can be such as device type
-        (CPU/GPU), layout (NCHW/NHWC), data type (float32/int8), etc. "Blob" here
+        (CPU/GPU), layout (NCHW/NHWC), datas type (float32/int8), etc. "Blob" here
         is versioned blob (Tuple[str, int]) in the format compatible with ssa.
     Inputs:
         predict_net: the caffe2 network

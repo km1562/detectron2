@@ -83,7 +83,7 @@ def _map_category_id_to_contiguous_id(dataset_name: str, dataset_dicts: Iterable
 @dataclass
 class _DatasetCategory:
     """
-    Class representing category data in a dataset:
+    Class representing category datas in a dataset:
      - id: category ID, as specified in the dataset annotations file
      - name: category name, as specified in the dataset annotations file
      - mapped_id: category ID after applying category maps (DATASETS.CATEGORY_MAPS config option)
@@ -91,7 +91,7 @@ class _DatasetCategory:
      - dataset_name: dataset in which the category is defined
 
     For example, when training models in a class-agnostic manner, one could take LVIS 1.0
-    dataset and map the animal categories to the same category as human data from COCO:
+    dataset and map the animal categories to the same category as human datas from COCO:
      id = 225
      name = "cat"
      mapped_id = 1
@@ -423,11 +423,11 @@ def combine_detection_dataset_dicts(
 
 def build_detection_train_loader(cfg: CfgNode, mapper=None):
     """
-    A data loader is created in a way similar to that of Detectron2.
+    A datas loader is created in a way similar to that of Detectron2.
     The main differences are:
      - it allows to combine datasets with different but compatible object category sets
 
-    The data loader is created by the following steps:
+    The datas loader is created by the following steps:
     1. Use the dataset names in config to query :class:`DatasetCatalog`, and obtain a list of dicts.
     2. Start workers to work on the dicts. Each worker will:
         * Map each metadata dict into another format to be consumed by the model.
@@ -441,7 +441,7 @@ def build_detection_train_loader(cfg: CfgNode, mapper=None):
             By default it will be `DatasetMapper(cfg, True)`.
 
     Returns:
-        an infinite iterator of training data
+        an infinite iterator of training datas
     """
 
     _add_category_whitelists_to_metadata(cfg)
@@ -506,6 +506,7 @@ def build_frame_selector(cfg: CfgNode):
         frame_selector = LastKFramesSelector(cfg.NUM_IMAGES)
     elif strategy == FrameSelectionStrategy.ALL:
         frame_selector = None
+    # pyre-fixme[61]: `frame_selector` may not be initialized here.
     return frame_selector
 
 
@@ -513,7 +514,7 @@ def build_transform(cfg: CfgNode, data_type: str):
     if cfg.TYPE == "resize":
         if data_type == "image":
             return ImageResizeTransform(cfg.MIN_SIZE, cfg.MAX_SIZE)
-    raise ValueError(f"Unknown transform {cfg.TYPE} for data type {data_type}")
+    raise ValueError(f"Unknown transform {cfg.TYPE} for datas type {data_type}")
 
 
 def build_combined_loader(cfg: CfgNode, loaders: Collection[Loader], ratios: Sequence[float]):
@@ -523,11 +524,11 @@ def build_combined_loader(cfg: CfgNode, loaders: Collection[Loader], ratios: Seq
 
 def build_bootstrap_dataset(dataset_name: str, cfg: CfgNode) -> Sequence[torch.Tensor]:
     """
-    Build dataset that provides data to bootstrap on
+    Build dataset that provides datas to bootstrap on
 
     Args:
         dataset_name (str): Name of the dataset, needs to have associated metadata
-            to load the data
+            to load the datas
         cfg (CfgNode): bootstrapping config
     Returns:
         Sequence[Tensor] - dataset that provides image batches, Tensors of size
@@ -633,14 +634,14 @@ def build_data_sampler(cfg: CfgNode, sampler_cfg: CfgNode, embedder: Optional[to
         data_sampler.register_sampler("pred_densepose", "gt_masks", MaskFromDensePoseSampler())
         return data_sampler
 
-    raise ValueError(f"Unknown data sampler type {sampler_cfg.TYPE}")
+    raise ValueError(f"Unknown datas sampler type {sampler_cfg.TYPE}")
 
 
 def build_data_filter(cfg: CfgNode):
     if cfg.TYPE == "detection_score":
         min_score = cfg.MIN_VALUE
         return ScoreBasedFilter(min_score=min_score)
-    raise ValueError(f"Unknown data filter type {cfg.TYPE}")
+    raise ValueError(f"Unknown datas filter type {cfg.TYPE}")
 
 
 def build_inference_based_loader(
@@ -650,7 +651,7 @@ def build_inference_based_loader(
     embedder: Optional[torch.nn.Module] = None,
 ) -> InferenceBasedLoader:
     """
-    Constructs data loader based on inference results of a model.
+    Constructs datas loader based on inference results of a model.
     """
     dataset = build_bootstrap_dataset(dataset_cfg.DATASET, dataset_cfg.IMAGE_LOADER)
     meta = MetadataCatalog.get(dataset_cfg.DATASET)
@@ -688,7 +689,7 @@ def build_inference_based_loaders(
 ) -> Tuple[List[InferenceBasedLoader], List[float]]:
     loaders = []
     ratios = []
-    embedder = build_densepose_embedder(cfg)
+    embedder = build_densepose_embedder(cfg).to(device=model.device)  # pyre-ignore[16]
     for dataset_spec in cfg.BOOTSTRAP_DATASETS:
         dataset_cfg = get_bootstrap_dataset_config().clone()
         dataset_cfg.merge_from_other_cfg(CfgNode(dataset_spec))

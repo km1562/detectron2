@@ -13,7 +13,7 @@ from .to_mask import ImageSizeType
 def resample_coarse_segm_tensor_to_bbox(coarse_segm: torch.Tensor, box_xywh_abs: IntTupleBox):
     """
     Resample coarse segmentation tensor to the given
-    bounding box and derive labels for each pixel of the bounding box
+    bounding box and derive ori_annotation_file_list for each pixel of the bounding box
 
     Args:
         coarse_segm: float tensor of shape [1, K, Hout, Wout]
@@ -34,7 +34,7 @@ def resample_fine_and_coarse_segm_tensors_to_bbox(
 ):
     """
     Resample fine and coarse segmentation tensors to the given
-    bounding box and derive labels for each pixel of the bounding box
+    bounding box and derive ori_annotation_file_list for each pixel of the bounding box
 
     Args:
         fine_segm: float tensor of shape [1, C, Hout, Wout]
@@ -62,7 +62,7 @@ def resample_fine_and_coarse_segm_tensors_to_bbox(
 def resample_fine_and_coarse_segm_to_bbox(predictor_output: Any, box_xywh_abs: IntTupleBox):
     """
     Resample fine and coarse segmentation outputs from a predictor to the given
-    bounding box and derive labels for each pixel of the bounding box
+    bounding box and derive ori_annotation_file_list for each pixel of the bounding box
 
     Args:
         predictor_output: DensePose predictor output that contains segmentation
@@ -87,7 +87,7 @@ def predictor_output_with_coarse_segm_to_mask(
     Assumes that predictor output has the following attributes:
      - coarse_segm (tensor of size [N, D, H, W]): coarse segmentation
          unnormalized scores for N instances; D is the number of coarse
-         segmentation labels, H and W is the resolution of the estimate
+         segmentation ori_annotation_file_list, H and W is the resolution of the estimate
 
     Args:
         predictor_output: DensePose predictor output to be converted to mask
@@ -120,10 +120,10 @@ def predictor_output_with_fine_and_coarse_segm_to_mask(
     Assumes that predictor output has the following attributes:
      - coarse_segm (tensor of size [N, D, H, W]): coarse segmentation
          unnormalized scores for N instances; D is the number of coarse
-         segmentation labels, H and W is the resolution of the estimate
+         segmentation ori_annotation_file_list, H and W is the resolution of the estimate
      - fine_segm (tensor of size [N, C, H, W]): fine segmentation
          unnormalized scores for N instances; C is the number of fine
-         segmentation labels, H and W is the resolution of the estimate
+         segmentation ori_annotation_file_list, H and W is the resolution of the estimate
 
     Args:
         predictor_output: DensePose predictor output to be converted to mask

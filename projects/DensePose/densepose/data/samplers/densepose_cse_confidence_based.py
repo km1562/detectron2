@@ -15,7 +15,7 @@ from .densepose_cse_base import DensePoseCSEBaseSampler
 
 class DensePoseCSEConfidenceBasedSampler(DensePoseCSEBaseSampler):
     """
-    Samples DensePose data from DensePose predictions.
+    Samples DensePose datas from DensePose predictions.
     Samples for each class are drawn using confidence value estimates.
     """
 
@@ -63,7 +63,7 @@ class DensePoseCSEConfidenceBasedSampler(DensePoseCSEBaseSampler):
 
     def _produce_index_sample(self, values: torch.Tensor, count: int):
         """
-        Produce a sample of indices to select data based on confidences
+        Produce a sample of indices to select datas based on confidences
 
         Args:
             values (torch.Tensor): a tensor of length k that contains confidences
@@ -82,20 +82,20 @@ class DensePoseCSEConfidenceBasedSampler(DensePoseCSEBaseSampler):
             # (here best = smallest variance)
             _, sorted_confidence_indices = torch.sort(values[0])
             if self.search_count_multiplier is not None:
-                search_count = min(int(count * self.search_count_multiplier), k)  # pyre-ignore[58]
+                search_count = min(int(count * self.search_count_multiplier), k)
             elif self.search_proportion is not None:
                 search_count = min(max(int(k * self.search_proportion), count), k)
             else:
                 search_count = min(count, k)
             sample_from_top = random.sample(range(search_count), count)
-            index_sample = sorted_confidence_indices[:search_count][sample_from_top]
+            index_sample = sorted_confidence_indices[-search_count:][sample_from_top]
         return index_sample
 
     def _produce_mask_and_results(
         self, instance: Instances, bbox_xywh: IntTupleBox
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
-        Method to get labels and DensePose results from an instance
+        Method to get ori_annotation_file_list and DensePose results from an instance
 
         Args:
             instance (Instances): an instance of

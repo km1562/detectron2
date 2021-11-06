@@ -11,7 +11,7 @@ from .densepose_base import DensePoseBaseSampler
 
 class DensePoseConfidenceBasedSampler(DensePoseBaseSampler):
     """
-    Samples DensePose data from DensePose predictions.
+    Samples DensePose datas from DensePose predictions.
     Samples for each class are drawn using confidence value estimates.
     """
 
@@ -56,7 +56,7 @@ class DensePoseConfidenceBasedSampler(DensePoseBaseSampler):
 
     def _produce_index_sample(self, values: torch.Tensor, count: int):
         """
-        Produce a sample of indices to select data based on confidences
+        Produce a sample of indices to select datas based on confidences
 
         Args:
             values (torch.Tensor): an array of size [n, k] that contains
@@ -77,7 +77,7 @@ class DensePoseConfidenceBasedSampler(DensePoseBaseSampler):
             # (here best = smallest variance)
             _, sorted_confidence_indices = torch.sort(values[2])
             if self.search_count_multiplier is not None:
-                search_count = min(int(count * self.search_count_multiplier), k)  # pyre-ignore[58]
+                search_count = min(int(count * self.search_count_multiplier), k)
             elif self.search_proportion is not None:
                 search_count = min(max(int(k * self.search_proportion), count), k)
             else:
@@ -88,19 +88,19 @@ class DensePoseConfidenceBasedSampler(DensePoseBaseSampler):
 
     def _produce_labels_and_results(self, instance) -> Tuple[torch.Tensor, torch.Tensor]:
         """
-        Method to get labels and DensePose results from an instance, with confidences
+        Method to get ori_annotation_file_list and DensePose results from an instance, with confidences
 
         Args:
             instance (Instances): an instance of `DensePoseChartPredictorOutputWithConfidences`
 
         Return:
-            labels (torch.Tensor): shape [H, W], DensePose segmentation labels
+            ori_annotation_file_list (torch.Tensor): shape [H, W], DensePose segmentation ori_annotation_file_list
             dp_result (torch.Tensor): shape [3, H, W], DensePose results u and v
                 stacked with the confidence channel
         """
         converter = ToChartResultConverterWithConfidences
         chart_result = converter.convert(instance.pred_densepose, instance.pred_boxes)
-        labels, dp_result = chart_result.labels.cpu(), chart_result.uv.cpu()
+        labels, dp_result = chart_result.ori_annotation_file_list.cpu(), chart_result.uv.cpu()
         dp_result = torch.cat(
             (dp_result, getattr(chart_result, self.confidence_channel)[None].cpu())
         )

@@ -10,8 +10,8 @@ def squared_euclidean_distance_matrix(pts1: torch.Tensor, pts2: torch.Tensor) ->
     Computes pairwise squared Euclidean distances between points
 
     Args:
-        pts1: Tensor [M x D], M is the number of points, D is feature dimensionality
-        pts2: Tensor [N x D], N is the number of points, D is feature dimensionality
+        pts1: Tensor [M features D], M is the number of points, D is feature dimensionality
+        pts2: Tensor [N features D], N is the number of points, D is feature dimensionality
 
     Return:
         Tensor [M, N]: matrix of squared Euclidean distances; at index (m, n)

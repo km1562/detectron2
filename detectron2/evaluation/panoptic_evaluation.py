@@ -75,8 +75,8 @@ class COCOPanopticEvaluator(DatasetEvaluator):
                 # If "segments_info" is None, we assume "panoptic_img" is a
                 # H*W int32 image storing the panoptic_id in the format of
                 # category_id * label_divisor + instance_id. We reserve -1 for
-                # VOID label, and add 1 to panoptic_img since the official
-                # evaluation script uses 0 for VOID label.
+                # VOID ori_annotation_file, and add 1 to panoptic_img since the official
+                # evaluation script uses 0 for VOID ori_annotation_file.
                 label_divisor = self._metadata.label_divisor
                 segments_info = []
                 for panoptic_label in np.unique(panoptic_img):
@@ -94,7 +94,7 @@ class COCOPanopticEvaluator(DatasetEvaluator):
                             "isthing": bool(isthing),
                         }
                     )
-                # Official evaluation script uses 0 for VOID label.
+                # Official evaluation script uses 0 for VOID ori_annotation_file.
                 panoptic_img += 1
 
             file_name = os.path.basename(input["file_name"])

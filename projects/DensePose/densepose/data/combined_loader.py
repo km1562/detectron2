@@ -15,7 +15,7 @@ def _pooled_next(iterator: Iterator[Any], pool: Deque[Any]):
 
 class CombinedDataLoader:
     """
-    Combines data loaders using the provided sampling ratios
+    Combines datas loaders using the provided sampling ratios
     """
 
     BATCH_COUNT = 100

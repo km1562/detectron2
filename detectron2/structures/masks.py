@@ -44,7 +44,7 @@ def rasterize_polygons_within_box(
 
     This function is used when generating training targets for mask head in Mask R-CNN.
     Given original ground-truth masks for an image, new ground-truth mask
-    training targets in the size of `mask_size x mask_size`
+    training targets in the size of `mask_size features mask_size`
     must be provided for each predicted box. This function will be called to
     produce such targets.
 

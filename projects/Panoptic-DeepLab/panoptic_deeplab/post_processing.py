@@ -16,7 +16,7 @@ def find_instance_center(center_heatmap, threshold=0.1, nms_kernel=3, top_k=None
         top_k: An integer, top k centers to keep.
     Returns:
         A Tensor of shape [K, 2] where K is the number of center points. The
-            order of second dim is (y, x).
+            order of second dim is (y, features).
     """
     # Thresholding, setting values below threshold to -1.
     center_heatmap = F.threshold(center_heatmap, threshold, -1)
@@ -46,7 +46,7 @@ def group_pixels(center_points, offsets):
     Gives each pixel in the image an instance id.
     Args:
         center_points: A Tensor of shape [K, 2] where K is the number of center points.
-            The order of second dim is (y, x).
+            The order of second dim is (y, features).
         offsets: A Tensor of shape [2, H, W] of raw offset output. The order of
             second dim is (offset_y, offset_x).
     Returns:
@@ -82,7 +82,7 @@ def get_instance_segmentation(
     """
     Post-processing for instance segmentation, gets class agnostic instance id.
     Args:
-        sem_seg: A Tensor of shape [1, H, W], predicted semantic label.
+        sem_seg: A Tensor of shape [1, H, W], predicted semantic ori_annotation_file.
         center_heatmap: A Tensor of shape [1, H, W] of raw center heatmap output.
         offsets: A Tensor of shape [2, H, W] of raw offset output. The order of
             second dim is (offset_y, offset_x).
@@ -97,7 +97,7 @@ def get_instance_segmentation(
         A Tensor of shape [1, H, W] with value 0 represent stuff (not instance)
             and other positive values represent different instances.
         A Tensor of shape [1, K, 2] where K is the number of center points.
-            The order of second dim is (y, x).
+            The order of second dim is (y, features).
     """
     center_points = find_instance_center(
         center_heatmap, threshold=threshold, nms_kernel=nms_kernel, top_k=top_k
@@ -113,7 +113,7 @@ def merge_semantic_and_instance(
 ):
     """
     Post-processing for panoptic segmentation, by merging semantic segmentation
-        label and class agnostic instance segmentation label.
+        ori_annotation_file and class agnostic instance segmentation ori_annotation_file.
     Args:
         sem_seg: A Tensor of shape [1, H, W], predicted category id for each pixel.
         ins_seg: A Tensor of shape [1, H, W], predicted instance id for each pixel.
@@ -178,7 +178,7 @@ def get_panoptic_segmentation(
     """
     Post-processing for panoptic segmentation.
     Args:
-        sem_seg: A Tensor of shape [1, H, W] of predicted semantic label.
+        sem_seg: A Tensor of shape [1, H, W] of predicted semantic ori_annotation_file.
         center_heatmap: A Tensor of shape [1, H, W] of raw center heatmap output.
         offsets: A Tensor of shape [2, H, W] of raw offset output. The order of
             second dim is (offset_y, offset_x).

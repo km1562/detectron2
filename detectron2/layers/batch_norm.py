@@ -1,5 +1,4 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
-import logging
 import torch
 import torch.distributed as dist
 from fvcore.nn.distributed import differentiable_all_reduce
@@ -21,8 +20,8 @@ class FrozenBatchNorm2d(nn.Module):
 
     The pre-trained backbone models from Caffe2 only contain "weight" and "bias",
     which are computed from the original four parameters of BN.
-    The affine transform `x * weight + bias` will perform the equivalent
-    computation of `(x - running_mean) / sqrt(running_var) * weight + bias`.
+    The affine transform `features * weight + bias` will perform the equivalent
+    computation of `(features - running_mean) / sqrt(running_var) * weight + bias`.
     When loading a backbone model from Caffe2, "running_mean" and "running_var"
     will be left unchanged as identity transformation.
 
@@ -78,15 +77,6 @@ class FrozenBatchNorm2d(nn.Module):
             if prefix + "running_var" not in state_dict:
                 state_dict[prefix + "running_var"] = torch.ones_like(self.running_var)
 
-        # NOTE: if a checkpoint is trained with BatchNorm and loaded (together with
-        # version number) to FrozenBatchNorm, running_var will be wrong. One solution
-        # is to remove the version number from the checkpoint.
-        if version is not None and version < 3:
-            logger = logging.getLogger(__name__)
-            logger.info("FrozenBatchNorm {} is upgraded to version 3.".format(prefix.rstrip(".")))
-            # In version < 3, running_var are used without +eps.
-            state_dict[prefix + "running_var"] -= self.eps
-
         super()._load_from_state_dict(
             state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys, error_msgs
         )
@@ -115,10 +105,10 @@ class FrozenBatchNorm2d(nn.Module):
         if isinstance(module, bn_module):
             res = cls(module.num_features)
             if module.affine:
-                res.weight.data = module.weight.data.clone().detach()
-                res.bias.data = module.bias.data.clone().detach()
-            res.running_mean.data = module.running_mean.data
-            res.running_var.data = module.running_var.data
+                res.weight.datas = module.weight.datas.clone().detach()
+                res.bias.datas = module.bias.datas.clone().detach()
+            res.running_mean.datas = module.running_mean.datas
+            res.running_var.datas = module.running_var.datas
             res.eps = module.eps
         else:
             for name, child in module.named_children():
@@ -152,6 +142,8 @@ def get_norm(norm, out_channels):
             # for debugging:
             "nnSyncBN": nn.SyncBatchNorm,
             "naiveSyncBN": NaiveSyncBatchNorm,
+            # expose stats_mode N as an option to caller, required for zero-len inputs
+            "naiveSyncBN_N": lambda channels: NaiveSyncBatchNorm(channels, stats_mode="N"),
         }[norm]
     return norm(out_channels)
 

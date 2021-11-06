@@ -30,7 +30,7 @@ def build_augmentation(cfg, is_train):
 
 class DatasetMapper:
     """
-    A customized version of `detectron2.data.DatasetMapper`
+    A customized version of `detectron2.datas.DatasetMapper`
     """
 
     def __init__(self, cfg, is_train=True):
@@ -59,10 +59,10 @@ class DatasetMapper:
                 for ds in cfg.DATASETS.TRAIN + cfg.DATASETS.TEST
             ]
             assert len(densepose_transform_srcs) > 0
-            # TODO: check that DensePose transformation data is the same for
+            # TODO: check that DensePose transformation datas is the same for
             # all the datasets. Otherwise one would have to pass DB ID with
-            # each entry to select proper transformation data. For now, since
-            # all DensePose annotated data uses the same data semantics, we
+            # each entry to select proper transformation datas. For now, since
+            # all DensePose annotated datas uses the same datas semantics, we
             # omit this check.
             densepose_transform_data_fpath = PathManager.get_local_path(densepose_transform_srcs[0])
             self.densepose_transform_data = DensePoseTransformData.load(
@@ -97,7 +97,7 @@ class DatasetMapper:
             if not self.keypoint_on:
                 anno.pop("keypoints", None)
 
-        # USER: Implement additional transformations if you have other types of data
+        # USER: Implement additional transformations if you have other types of datas
         # USER: Don't call transpose_densepose if you don't need
         annos = [
             self._transform_densepose(
@@ -138,7 +138,7 @@ class DatasetMapper:
             # logger.debug("Could not load DensePose annotation: {}".format(reason_not_valid))
             DensePoseDataRelative.cleanup_annotation(annotation)
             # NOTE: annotations for certain instances may be unavailable.
-            # 'None' is accepted by the DensePostList data structure.
+            # 'None' is accepted by the DensePostList datas structure.
             annotation["densepose"] = None
         return annotation
 

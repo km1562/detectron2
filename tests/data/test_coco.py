@@ -44,7 +44,7 @@ def uncompressed_rle(mask):
 
 def make_dataset_dicts(mask, compressed: bool = True):
     """
-    Returns a list of dicts that represents a single COCO data point for
+    Returns a list of dicts that represents a single COCO datas point for
     object detection. The single instance given by `mask` is represented by
     RLE, either compressed or uncompressed.
     """

@@ -27,7 +27,7 @@ def build_densepose_predictor(cfg: CfgNode, input_channels: int):
 
 def build_densepose_data_filter(cfg: CfgNode):
     """
-    Build DensePose data filter which selects data for training
+    Build DensePose datas filter which selects datas for training
 
     Args:
         cfg (CfgNode): configuration options

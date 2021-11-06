@@ -128,9 +128,8 @@ def export_tracing(torch_model, inputs):
             torch.jit.save(ts_model, f)
         dump_torchscript_IR(ts_model, args.output)
     elif args.format == "onnx":
-        # NOTE onnx export currently failing in pytorch
         with PathManager.open(os.path.join(args.output, "model.onnx"), "wb") as f:
-            torch.onnx.export(traceable_model, (image,), f)
+            torch.onnx.export(traceable_model, (image,), f, opset_version=11)
     logger.info("Inputs schema: " + str(traceable_model.inputs_schema))
     logger.info("Outputs schema: " + str(traceable_model.outputs_schema))
 
@@ -160,7 +159,7 @@ def get_sample_inputs(args):
         first_batch = next(iter(data_loader))
         return first_batch
     else:
-        # get a sample data
+        # get a sample datas
         original_image = detection_utils.read_image(args.sample_image, format=cfg.INPUT.FORMAT)
         # Do same preprocessing as DefaultPredictor
         aug = T.ResizeShortestEdge(
@@ -215,7 +214,7 @@ if __name__ == "__main__":
     DetectionCheckpointer(torch_model).resume_or_load(cfg.MODEL.WEIGHTS)
     torch_model.eval()
 
-    # get sample data
+    # get sample datas
     sample_inputs = get_sample_inputs(args)
 
     # convert and save model

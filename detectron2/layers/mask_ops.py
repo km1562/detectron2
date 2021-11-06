@@ -75,7 +75,7 @@ def paste_masks_in_image(
     masks: torch.Tensor, boxes: Boxes, image_shape: Tuple[int, int], threshold: float = 0.5
 ):
     """
-    Paste a set of masks that are of a fixed resolution (e.g., 28 x 28) into an image.
+    Paste a set of masks that are of a fixed resolution (e.g., 28 features 28) into an image.
     The location, height, and width for pasting each mask is determined by their
     corresponding bounding boxes in boxes.
 
@@ -182,7 +182,7 @@ def paste_mask_in_image_old(mask, box, img_h, img_w, threshold):
     samples_w = box[2] - box[0] + 1  # Number of pixel samples, *not* geometric width
     samples_h = box[3] - box[1] + 1  # Number of pixel samples, *not* geometric height
 
-    # Resample the mask from it's original grid to the new samples_w x samples_h grid
+    # Resample the mask from it's original grid to the new samples_w features samples_h grid
     mask = Image.fromarray(mask.cpu().numpy())
     mask = mask.resize((samples_w, samples_h), resample=Image.BILINEAR)
     mask = np.array(mask, copy=False)

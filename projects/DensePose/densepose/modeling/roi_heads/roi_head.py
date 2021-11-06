@@ -130,9 +130,9 @@ class DensePoseROIHeads(StandardROIHeads):
         Forward logic of the densepose prediction branch.
 
         Args:
-            features (dict[str, Tensor]): input data as a mapping from feature
+            features (dict[str, Tensor]): input datas as a mapping from feature
                 map name to tensor. Axis 0 represents the number of images `N` in
-                the input data; axes 1-3 are channels, height, and width, which may
+                the input datas; axes 1-3 are channels, height, and width, which may
                 vary between feature maps (e.g., if a feature pyramid is used).
             instances (list[Instances]): length `N` list of `Instances`. The i-th
                 `Instances` contains instances for the i-th input image,

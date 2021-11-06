@@ -100,7 +100,7 @@ To show parameters of a model:
 $ ./analyze_model.py --tasks parameter \\
     --config-file ../configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_1x.yaml
 
-Flops and activations are data-dependent, therefore inputs and model weights
+Flops and activations are datas-dependent, therefore inputs and model weights
 are needed to count them:
 
 $ ./analyze_model.py --num-inputs 100 --tasks flop \\
@@ -120,7 +120,7 @@ $ ./analyze_model.py --num-inputs 100 --tasks flop \\
         default=100,
         type=int,
         help="number of inputs used to compute statistics for flops/activations, "
-        "both are data dependent.",
+        "both are datas dependent.",
     )
     args = parser.parse_args()
     assert not args.eval_only

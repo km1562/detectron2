@@ -29,12 +29,12 @@ def point_sample(input, point_coords, **kwargs):
     """
     A wrapper around :function:`torch.nn.functional.grid_sample` to support 3D point_coords tensors.
     Unlike :function:`torch.nn.functional.grid_sample` it assumes `point_coords` to lie inside
-    [0, 1] x [0, 1] square.
+    [0, 1] features [0, 1] square.
 
     Args:
-        input (Tensor): A tensor of shape (N, C, H, W) that contains features map on a H x W grid.
+        input (Tensor): A tensor of shape (N, C, H, W) that contains features map on a H features W grid.
         point_coords (Tensor): A tensor of shape (N, P, 2) or (N, Hgrid, Wgrid, 2) that contains
-        [0, 1] x [0, 1] normalized point coordinates.
+        [0, 1] features [0, 1] normalized point coordinates.
 
     Returns:
         output (Tensor): A tensor of shape (N, C, P) or (N, C, Hgrid, Wgrid) that contains
@@ -53,7 +53,7 @@ def point_sample(input, point_coords, **kwargs):
 
 def generate_regular_grid_point_coords(R, side_size, device):
     """
-    Generate regular square grid of points in [0, 1] x [0, 1] coordinate space.
+    Generate regular square grid of points in [0, 1] features [0, 1] coordinate space.
 
     Args:
         R (int): The number of grids to sample, one for each region.
@@ -73,7 +73,7 @@ def get_uncertain_point_coords_with_randomness(
     coarse_logits, uncertainty_func, num_points, oversample_ratio, importance_sample_ratio
 ):
     """
-    Sample points in [0, 1] x [0, 1] coordinate space based on their uncertainty. The unceratinties
+    Sample points in [0, 1] features [0, 1] coordinate space based on their uncertainty. The unceratinties
         are calculated for each point using 'uncertainty_func' function that takes point's logit
         prediction as input.
     See PointRend paper for details.
@@ -131,14 +131,14 @@ def get_uncertain_point_coords_on_grid(uncertainty_map, num_points):
 
     Args:
         uncertainty_map (Tensor): A tensor of shape (N, 1, H, W) that contains uncertainty
-            values for a set of points on a regular H x W grid.
+            values for a set of points on a regular H features W grid.
         num_points (int): The number of points P to select.
 
     Returns:
         point_indices (Tensor): A tensor of shape (N, P) that contains indices from
-            [0, H x W) of the most uncertain points.
-        point_coords (Tensor): A tensor of shape (N, P, 2) that contains [0, 1] x [0, 1] normalized
-            coordinates of the most uncertain points from the H x W grid.
+            [0, H features W) of the most uncertain points.
+        point_coords (Tensor): A tensor of shape (N, P, 2) that contains [0, 1] features [0, 1] normalized
+            coordinates of the most uncertain points from the H features W grid.
     """
     R, _, H, W = uncertainty_map.shape
     h_step = 1.0 / float(H)
@@ -163,7 +163,7 @@ def point_sample_fine_grained_features(features_list, feature_scales, boxes, poi
         boxes (list[Boxes]): A list of I Boxes  objects that contain R_1 + ... + R_I = R boxes all
             together.
         point_coords (Tensor): A tensor of shape (R, P, 2) that contains
-            [0, 1] x [0, 1] box-normalized coordinates of the P sampled points.
+            [0, 1] features [0, 1] box-normalized coordinates of the P sampled points.
 
     Returns:
         point_features (Tensor): A tensor of shape (R, C, P) that contains features sampled
@@ -200,13 +200,13 @@ def point_sample_fine_grained_features(features_list, feature_scales, boxes, poi
 
 def get_point_coords_wrt_image(boxes_coords, point_coords):
     """
-    Convert box-normalized [0, 1] x [0, 1] point cooordinates to image-level coordinates.
+    Convert box-normalized [0, 1] features [0, 1] point cooordinates to image-level coordinates.
 
     Args:
         boxes_coords (Tensor): A tensor of shape (R, 4) that contains bounding boxes.
             coordinates.
         point_coords (Tensor): A tensor of shape (R, P, 2) that contains
-            [0, 1] x [0, 1] box-normalized coordinates of the P sampled points.
+            [0, 1] features [0, 1] box-normalized coordinates of the P sampled points.
 
     Returns:
         point_coords_wrt_image (Tensor): A tensor of shape (R, P, 2) that contains
@@ -227,18 +227,18 @@ def get_point_coords_wrt_image(boxes_coords, point_coords):
 
 def sample_point_labels(instances, point_coords):
     """
-    Sample point labels from ground truth mask given point_coords.
+    Sample point ori_annotation_file_list from ground truth mask given point_coords.
 
     Args:
         instances (list[Instances]): A list of N Instances, where N is the number of images
             in the batch. So, i_th elememt of the list contains R_i objects and R_1 + ... + R_N is
-            equal to R. The ground-truth gt_masks in each instance will be used to compute labels.
+            equal to R. The ground-truth gt_masks in each instance will be used to compute ori_annotation_file_list.
         points_coords (Tensor): A tensor of shape (R, P, 2), where R is the total number of
             instances and P is the number of points for each instance. The coordinates are in
-            the absolute image pixel coordinate space, i.e. [0, H] x [0, W].
+            the absolute image pixel coordinate space, i.e. [0, H] features [0, W].
 
     Returns:
-        Tensor: A tensor of shape (R, P) that contains the labels of P sampled points.
+        Tensor: A tensor of shape (R, P) that contains the ori_annotation_file_list of P sampled points.
     """
     with torch.no_grad():
         gt_mask_logits = []

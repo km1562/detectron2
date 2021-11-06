@@ -6,17 +6,17 @@ from detectron2.layers import cat
 
 def get_point_coords_from_point_annotation(instances):
     """
-    Load point coords and their corresponding labels from point annotation.
+    Load point coords and their corresponding ori_annotation_file_list from point annotation.
 
     Args:
         instances (list[Instances]): A list of N Instances, where N is the number of images
             in the batch. These instances are in 1:1
-            correspondence with the pred_mask_logits. The ground-truth labels (class, box, mask,
+            correspondence with the pred_mask_logits. The ground-truth ori_annotation_file_list (class, box, mask,
             ...) associated with each instance are stored in fields.
     Returns:
         point_coords (Tensor): A tensor of shape (N, P, 2) that contains the coordinates of P
             sampled points.
-        point_labels (Tensor): A tensor of shape (N, P) that contains the labels of P
+        point_labels (Tensor): A tensor of shape (N, P) that contains the ori_annotation_file_list of P
             sampled points. `point_labels` takes 3 possible values:
             - 0: the point belongs to background
             - 1: the point belongs to the object
@@ -54,7 +54,7 @@ def get_point_coords_from_point_annotation(instances):
 
 def get_point_coords_wrt_box(boxes_coords, point_coords):
     """
-    Convert image-level absolute coordinates to box-normalized [0, 1] x [0, 1] point cooordinates.
+    Convert image-level absolute coordinates to box-normalized [0, 1] features [0, 1] point cooordinates.
     Args:
         boxes_coords (Tensor): A tensor of shape (R, 4) that contains bounding boxes.
             coordinates.
@@ -62,7 +62,7 @@ def get_point_coords_wrt_box(boxes_coords, point_coords):
             image-normalized coordinates of P sampled points.
     Returns:
         point_coords_wrt_box (Tensor): A tensor of shape (R, P, 2) that contains
-            [0, 1] x [0, 1] box-normalized coordinates of the P sampled points.
+            [0, 1] features [0, 1] box-normalized coordinates of the P sampled points.
     """
     with torch.no_grad():
         point_coords_wrt_box = point_coords.clone()

@@ -13,7 +13,7 @@ from .segm import SegmentationLoss
 class MaskOrSegmentationLoss:
     """
     Mask or segmentation loss as cross-entropy for raw unnormalized scores
-    given ground truth labels. Ground truth labels are either defined by coarse
+    given ground truth ori_annotation_file_list. Ground truth ori_annotation_file_list are either defined by coarse
     segmentation annotation, or by mask annotation, depending on the config
     value MODEL.ROI_DENSEPOSE_HEAD.COARSE_SEGM_TRAINED_BY_MASKS
     """
@@ -42,14 +42,14 @@ class MaskOrSegmentationLoss:
         either by masks, or by coarse segmentation annotations.
 
         Args:
-            proposals_with_gt (list of Instances): detections with associated ground truth data
+            proposals_with_gt (list of Instances): detections with associated ground truth datas
             densepose_predictor_outputs: an object of a dataclass that contains predictor outputs
                 with estimated values; assumed to have the following attributes:
                 * coarse_segm - coarse segmentation estimates, tensor of shape [N, D, S, S]
             packed_annotations: packed annotations for efficient loss computation
         Return:
             tensor: loss value as cross-entropy for raw unnormalized scores
-                given ground truth labels
+                given ground truth ori_annotation_file_list
         """
         if self.segm_trained_by_masks:
             return self.mask_loss(proposals_with_gt, densepose_predictor_outputs)
@@ -57,7 +57,7 @@ class MaskOrSegmentationLoss:
 
     def fake_value(self, densepose_predictor_outputs: Any) -> torch.Tensor:
         """
-        Fake segmentation loss used when no suitable ground truth data
+        Fake segmentation loss used when no suitable ground truth datas
         was found in a batch. The loss has a value 0 and is primarily used to
         construct the computation graph, so that `DistributedDataParallel`
         has similar graphs on all GPUs and can perform reduction properly.

@@ -15,7 +15,7 @@ Therefore, we recommend you to use detectron2 as a library and take
 this file as an example of how to use the library.
 You may want to write your own script with your datasets and other customizations.
 
-Compared to "train_net.py", this script supports fewer default features.
+Compared to "train_net_pycallgraph.py", this script supports fewer default features.
 It also includes fewer abstraction, therefore is easier to add custom logic.
 """
 
@@ -78,12 +78,12 @@ def get_evaluator(cfg, dataset_name, output_folder=None):
         evaluator_list.append(COCOPanopticEvaluator(dataset_name, output_folder))
     if evaluator_type == "cityscapes_instance":
         assert (
-            torch.cuda.device_count() >= comm.get_rank()
+            torch.cuda.device_count() > comm.get_rank()
         ), "CityscapesEvaluator currently do not work with multiple machines."
         return CityscapesInstanceEvaluator(dataset_name)
     if evaluator_type == "cityscapes_sem_seg":
         assert (
-            torch.cuda.device_count() >= comm.get_rank()
+            torch.cuda.device_count() > comm.get_rank()
         ), "CityscapesEvaluator currently do not work with multiple machines."
         return CityscapesSemSegEvaluator(dataset_name)
     if evaluator_type == "pascal_voc":
@@ -135,7 +135,7 @@ def do_train(cfg, model, resume=False):
 
     writers = default_writers(cfg.OUTPUT_DIR, max_iter) if comm.is_main_process() else []
 
-    # compared to "train_net.py", we do not support accurate timing and
+    # compared to "train_net_pycallgraph.py", we do not support accurate timing and
     # precise BN here, because they are not trivial to implement in a small training loop
     data_loader = build_detection_train_loader(cfg)
     logger.info("Starting training from iteration {}".format(start_iter))
@@ -164,7 +164,7 @@ def do_train(cfg, model, resume=False):
                 and iteration != max_iter - 1
             ):
                 do_test(cfg, model)
-                # Compared to "train_net.py", the test results are not dumped to EventStorage
+                # Compared to "train_net_pycallgraph.py", the test results are not dumped to EventStorage
                 comm.synchronize()
 
             if iteration - start_iter > 5 and (

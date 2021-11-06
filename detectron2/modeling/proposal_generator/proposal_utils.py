@@ -6,17 +6,17 @@ import torch
 
 from detectron2.layers import batched_nms, cat
 from detectron2.structures import Boxes, Instances
-from detectron2.utils.env import TORCH_VERSION
 
 logger = logging.getLogger(__name__)
 
 
 def _is_tracing():
+    # (fixed in TORCH_VERSION >= 1.9)
     if torch.jit.is_scripting():
         # https://github.com/pytorch/pytorch/issues/47379
         return False
     else:
-        return TORCH_VERSION >= (1, 7) and torch.jit.is_tracing()
+        return torch.jit.is_tracing()
 
 
 def find_top_rpn_proposals(
@@ -61,7 +61,7 @@ def find_top_rpn_proposals(
     device = proposals[0].device
 
     # 1. Select top-k anchor for every level and every image
-    topk_scores = []  # #lvl Tensor, each of shape N x topk
+    topk_scores = []  # #lvl Tensor, each of shape N features topk
     topk_proposals = []
     level_ids = []  # #lvl Tensor, each of shape (topk,)
     batch_idx = torch.arange(num_images, device=device)
@@ -78,8 +78,8 @@ def find_top_rpn_proposals(
         topk_scores_i = logits_i.narrow(1, 0, num_proposals_i)
         topk_idx = idx.narrow(1, 0, num_proposals_i)
 
-        # each is N x topk
-        topk_proposals_i = proposals_i[batch_idx[:, None], topk_idx]  # N x topk x 4
+        # each is N features topk
+        topk_proposals_i = proposals_i[batch_idx[:, None], topk_idx]  # N features topk features 4
 
         topk_proposals.append(topk_proposals_i)
         topk_scores.append(topk_scores_i)

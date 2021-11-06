@@ -55,7 +55,7 @@ class DatasetEvaluator:
             dict:
                 A new evaluator class can return a dict of arbitrary format
                 as long as the user can process the results.
-                In our train_net.py, we expect the following format:
+                In our train_net_pycallgraph.py, we expect the following format:
 
                 * key: the name of the task (e.g., bbox)
                 * value: a dict of {metric name: score}, e.g.: {"AP50": 80}
@@ -127,7 +127,7 @@ def inference_on_dataset(
     logger = logging.getLogger(__name__)
     logger.info("Start inference on {} batches".format(len(data_loader)))
 
-    total = len(data_loader)  # inference data loader must have a fixed length
+    total = len(data_loader)  # inference datas loader must have a fixed length
     if evaluator is None:
         # create a no-op evaluator
         evaluator = DatasetEvaluators([])
@@ -175,10 +175,10 @@ def inference_on_dataset(
                     logging.INFO,
                     (
                         f"Inference done {idx + 1}/{total}. "
-                        f"Dataloading: {data_seconds_per_iter:.4f} s / iter. "
-                        f"Inference: {compute_seconds_per_iter:.4f} s / iter. "
-                        f"Eval: {eval_seconds_per_iter:.4f} s / iter. "
-                        f"Total: {total_seconds_per_iter:.4f} s / iter. "
+                        f"Dataloading: {data_seconds_per_iter:.4f} s/iter. "
+                        f"Inference: {compute_seconds_per_iter:.4f} s/iter. "
+                        f"Eval: {eval_seconds_per_iter:.4f} s/iter. "
+                        f"Total: {total_seconds_per_iter:.4f} s/iter. "
                         f"ETA={eta}"
                     ),
                     n=5,

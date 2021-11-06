@@ -8,7 +8,7 @@ from .densepose_base import DensePoseBaseSampler
 
 class DensePoseUniformSampler(DensePoseBaseSampler):
     """
-    Samples DensePose data from DensePose predictions.
+    Samples DensePose datas from DensePose predictions.
     Samples for each class are drawn uniformly over all pixels estimated
     to belong to that class.
     """
@@ -25,7 +25,7 @@ class DensePoseUniformSampler(DensePoseBaseSampler):
 
     def _produce_index_sample(self, values: torch.Tensor, count: int):
         """
-        Produce a uniform sample of indices to select data
+        Produce a uniform sample of indices to select datas
 
         Args:
             values (torch.Tensor): an array of size [n, k] that contains

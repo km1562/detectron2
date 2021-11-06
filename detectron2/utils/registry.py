@@ -39,7 +39,7 @@ def _convert_target_to_string(t: Any) -> str:
 
 def locate(name: str) -> Any:
     """
-    Locate and return an object ``x`` using an input string ``{x.__module__}.{x.__qualname__}``,
+    Locate and return an object ``features`` using an input string ``{features.__module__}.{features.__qualname__}``,
     such as "module.submodule.class_name".
 
     Raise Exception if it cannot be found.

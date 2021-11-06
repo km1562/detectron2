@@ -191,7 +191,7 @@ class Boxes:
 
     def clip(self, box_size: Tuple[int, int]) -> None:
         """
-        Clip (in place) the boxes by limiting x coordinates to the range [0, width]
+        Clip (in place) the boxes by limiting features coordinates to the range [0, width]
         and y coordinates to the range [0, height].
 
         Args:
@@ -273,7 +273,7 @@ class Boxes:
     def get_centers(self) -> torch.Tensor:
         """
         Returns:
-            The box centers in a Nx2 array of (x, y).
+            The box centers in a Nx2 array of (features, y).
         """
         return (self.tensor[:, :2] + self.tensor[:, 2:]) / 2
 
@@ -322,7 +322,7 @@ class Boxes:
 def pairwise_intersection(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
     """
     Given two lists of boxes of size N and M,
-    compute the intersection area between __all__ N x M pairs of boxes.
+    compute the intersection area between __all__ N features M pairs of boxes.
     The box order must be (xmin, ymin, xmax, ymax)
 
     Args:
@@ -346,7 +346,7 @@ def pairwise_intersection(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
 def pairwise_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
     """
     Given two lists of boxes of size N and M, compute the IoU
-    (intersection over union) between **all** N x M pairs of boxes.
+    (intersection over union) between **all** N features M pairs of boxes.
     The box order must be (xmin, ymin, xmax, ymax).
 
     Args:
@@ -388,15 +388,34 @@ def pairwise_ioa(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
     return ioa
 
 
-def matched_boxlist_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
+def pairwise_point_box_distance(points: torch.Tensor, boxes: Boxes):
     """
-    Compute pairwise intersection over union (IOU) of two sets of matched
-    boxes. The box order must be (xmin, ymin, xmax, ymax).
-    Similar to boxlist_iou, but computes only diagonal elements of the matrix
+    Pairwise distance between N points and M boxes. The distance between a
+    point and a box is represented by the distance from the point to 4 edges
+    of the box. Distances are all positive when the point is inside the box.
 
     Args:
-        boxes1: (Boxes) bounding boxes, sized [N,4].
-        boxes2: (Boxes) bounding boxes, sized [N,4].
+        points: Nx2 coordinates. Each row is (features, y)
+        boxes: M boxes
+
+    Returns:
+        Tensor: distances of size (N, M, 4). The 4 values are distances from
+            the point to the left, top, right, bottom of the box.
+    """
+    x, y = points.unsqueeze(dim=2).unbind(dim=1)  # (N, 1)
+    x0, y0, x1, y1 = boxes.tensor.unsqueeze(dim=0).unbind(dim=2)  # (1, M)
+    return torch.stack([x - x0, y - y0, x1 - x, y1 - y], dim=2)
+
+
+def matched_pairwise_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
+    """
+    Compute pairwise intersection over union (IOU) of two sets of matched
+    boxes that have the same number of boxes.
+    Similar to :func:`pairwise_iou`, but computes only diagonal elements of the matrix.
+
+    Args:
+        boxes1 (Boxes): bounding boxes, sized [N,4].
+        boxes2 (Boxes): same length as boxes1
     Returns:
         Tensor: iou, sized [N].
     """

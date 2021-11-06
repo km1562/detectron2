@@ -22,8 +22,8 @@ def add_evaluation_config(cfg: CN):
     _C = cfg
     _C.DENSEPOSE_EVALUATION = CN()
     # evaluator type, possible values:
-    #  - "iou": evaluator for models that produce iou data
-    #  - "cse": evaluator for models that produce cse data
+    #  - "iou": evaluator for models that produce iou datas
+    #  - "cse": evaluator for models that produce cse datas
     _C.DENSEPOSE_EVALUATION.TYPE = "iou"
     # storage for DensePose results, possible values:
     #  - "none": no explicit storage, all the results are stored in the
@@ -59,7 +59,7 @@ def add_bootstrap_config(cfg: CN):
 def get_bootstrap_dataset_config() -> CN:
     _C = CN()
     _C.DATASET = ""
-    # ratio used to mix data loaders
+    # ratio used to mix datas loaders
     _C.RATIO = 0.1
     # image loader
     _C.IMAGE_LOADER = CN(new_allowed=True)
@@ -75,7 +75,7 @@ def get_bootstrap_dataset_config() -> CN:
     _C.INFERENCE.INPUT_BATCH_SIZE = 4
     # batch size to group model outputs
     _C.INFERENCE.OUTPUT_BATCH_SIZE = 2
-    # sampled data
+    # sampled datas
     _C.DATA_SAMPLER = CN(new_allowed=True)
     _C.DATA_SAMPLER.TYPE = ""
     _C.DATA_SAMPLER.USE_GROUND_TRUTH_CATEGORIES = False
@@ -119,8 +119,8 @@ def add_densepose_head_cse_config(cfg: CN):
     # embedding loss weight
     _C.MODEL.ROI_DENSEPOSE_HEAD.CSE.EMBED_LOSS_WEIGHT = 0.6
     # embedding loss name, currently the following options are supported:
-    # - EmbeddingLoss: cross-entropy on vertex labels
-    # - SoftEmbeddingLoss: cross-entropy on vertex label combined with
+    # - EmbeddingLoss: cross-entropy on vertex ori_annotation_file_list
+    # - SoftEmbeddingLoss: cross-entropy on vertex ori_annotation_file combined with
     #    Gaussian penalty on distance between vertices
     _C.MODEL.ROI_DENSEPOSE_HEAD.CSE.EMBED_LOSS_NAME = "EmbeddingLoss"
     # optimizer hyperparameters
@@ -166,7 +166,7 @@ def add_densepose_head_config(cfg: CN):
     _C.MODEL.ROI_DENSEPOSE_HEAD = CN()
     _C.MODEL.ROI_DENSEPOSE_HEAD.NAME = ""
     _C.MODEL.ROI_DENSEPOSE_HEAD.NUM_STACKED_CONVS = 8
-    # Number of parts used for point labels
+    # Number of parts used for point ori_annotation_file_list
     _C.MODEL.ROI_DENSEPOSE_HEAD.NUM_PATCHES = 24
     _C.MODEL.ROI_DENSEPOSE_HEAD.DECONV_KERNEL = 4
     _C.MODEL.ROI_DENSEPOSE_HEAD.CONV_HEAD_DIM = 512
@@ -185,7 +185,7 @@ def add_densepose_head_config(cfg: CN):
     _C.MODEL.ROI_DENSEPOSE_HEAD.PART_WEIGHTS = 1.0
     # Loss weights for UV regression.
     _C.MODEL.ROI_DENSEPOSE_HEAD.POINT_REGRESSION_WEIGHTS = 0.01
-    # Coarse segmentation is trained using instance segmentation task data
+    # Coarse segmentation is trained using instance segmentation task datas
     _C.MODEL.ROI_DENSEPOSE_HEAD.COARSE_SEGM_TRAINED_BY_MASKS = False
     # For Decoder
     _C.MODEL.ROI_DENSEPOSE_HEAD.DECODER_ON = True
@@ -227,7 +227,7 @@ def add_densepose_head_config(cfg: CN):
     # - "indep_aniso": statistically independent residuals with anisotropic
     #    covariances
     _C.MODEL.ROI_DENSEPOSE_HEAD.UV_CONFIDENCE.TYPE = "iid_iso"
-    # List of angles for rotation in data augmentation during training
+    # List of angles for rotation in datas augmentation during training
     _C.INPUT.ROTATION_ANGLES = [0]
     _C.TEST.AUG.ROTATION_ANGLES = ()  # Rotation TTA
 

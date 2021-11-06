@@ -26,12 +26,12 @@ This script was used to train all DensePose models in [Model Zoo](MODEL_ZOO.md).
 For example, to launch end-to-end DensePose-RCNN training with ResNet-50 FPN backbone
 on 8 GPUs following the s1x schedule, one can run
 ```bash
-python train_net.py --config-file configs/densepose_rcnn_R_50_FPN_s1x.yaml --num-gpus 8
+python train_net_pycallgraph.py --config-file configs/densepose_rcnn_R_50_FPN_s1x.yaml --num-gpus 8
 ```
 The configs are made for 8-GPU training. To train on 1 GPU, one can apply the
 [linear learning rate scaling rule](https://arxiv.org/abs/1706.02677):
 ```bash
-python train_net.py --config-file configs/densepose_rcnn_R_50_FPN_s1x.yaml \
+python train_net_pycallgraph.py --config-file configs/densepose_rcnn_R_50_FPN_s1x.yaml \
     SOLVER.IMS_PER_BATCH 2 SOLVER.BASE_LR 0.0025
 ```
 
@@ -40,7 +40,7 @@ python train_net.py --config-file configs/densepose_rcnn_R_50_FPN_s1x.yaml \
 Model testing can be done in the same way as training, except for an additional flag `--eval-only` and
 model location specification through `MODEL.WEIGHTS model.pth` in the command line
 ```bash
-python train_net.py --config-file configs/densepose_rcnn_R_50_FPN_s1x.yaml \
+python train_net_pycallgraph.py --config-file configs/densepose_rcnn_R_50_FPN_s1x.yaml \
     --eval-only MODEL.WEIGHTS model.pth
 ```
 
@@ -56,3 +56,21 @@ Please refer to [Query DB](TOOL_QUERY_DB.md) for more details on this tool
 
 `apply_net` is a tool to print or visualize DensePose results.
 Please refer to [Apply Net](TOOL_APPLY_NET.md) for more details on this tool
+
+
+## Installation as a package
+
+DensePose can also be installed as a Python package for integration with other software.
+
+The following dependencies are needed:
+- Python >= 3.6
+- [PyTorch](https://pytorch.org/get-started/locally/#start-locally) >= 1.7 (to match [detectron2 requirements](https://detectron2.readthedocs.io/en/latest/tutorials/install.html#requirements))
+- [torchvision](https://pytorch.org/vision/stable/) version [compatible with your version of PyTorch](https://github.com/pytorch/vision#installation)
+
+DensePose can then be installed from this repository with:
+
+```
+pip install git+https://github.com/facebookresearch/detectron2@master#subdirectory=projects/DensePose
+```
+
+After installation, the package will be importable as `densepose`.

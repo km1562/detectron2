@@ -54,7 +54,7 @@ def select_foreground_proposals(
     Args:
         proposals (list[Instances]): A list of N Instances, where N is the number of
             images in the batch.
-        bg_label: label index of background class.
+        bg_label: ori_annotation_file index of background class.
 
     Returns:
         list[Instances]: N Instances, each contains only the selected foreground instances.
@@ -100,10 +100,10 @@ def select_proposals_with_visible_keypoints(proposals: List[Instances]) -> List[
             ret.append(proposals_per_image)
             continue
         gt_keypoints = proposals_per_image.gt_keypoints.tensor
-        # #fg x K x 3
+        # #fg features K features 3
         vis_mask = gt_keypoints[:, :, 2] >= 1
         xs, ys = gt_keypoints[:, :, 0], gt_keypoints[:, :, 1]
-        proposal_boxes = proposals_per_image.proposal_boxes.tensor.unsqueeze(dim=1)  # #fg x 1 x 4
+        proposal_boxes = proposals_per_image.proposal_boxes.tensor.unsqueeze(dim=1)  # #fg features 1 features 4
         kp_in_box = (
             (xs >= proposal_boxes[:, :, 0])
             & (xs <= proposal_boxes[:, :, 2])
@@ -183,18 +183,18 @@ class ROIHeads(torch.nn.Module):
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Based on the matching between N proposals and M groundtruth,
-        sample the proposals and set their classification labels.
+        sample the proposals and set their classification ori_annotation_file_list.
 
         Args:
             matched_idxs (Tensor): a vector of length N, each is the best-matched
                 gt index in [0, M) for each proposal.
-            matched_labels (Tensor): a vector of length N, the matcher's label
+            matched_labels (Tensor): a vector of length N, the matcher's ori_annotation_file
                 (one of cfg.MODEL.ROI_HEADS.IOU_LABELS) for each proposal.
             gt_classes (Tensor): a vector of length M.
 
         Returns:
             Tensor: a vector of indices of sampled proposals. Each is in [0, N).
-            Tensor: a vector of the same length, the classification label for
+            Tensor: a vector of the same length, the classification ori_annotation_file for
                 each sampled proposal. Each sample is labeled as either a category in
                 [0, num_classes) or the background (num_classes).
         """
@@ -202,9 +202,9 @@ class ROIHeads(torch.nn.Module):
         # Get the corresponding GT for each proposal
         if has_gt:
             gt_classes = gt_classes[matched_idxs]
-            # Label unmatched proposals (0 label from matcher) as background (label=num_classes)
+            # Label unmatched proposals (0 ori_annotation_file from matcher) as background (ori_annotation_file=num_classes)
             gt_classes[matched_labels == 0] = self.num_classes
-            # Label ignore proposals (-1 label)
+            # Label ignore proposals (-1 ori_annotation_file)
             gt_classes[matched_labels == -1] = -1
         else:
             gt_classes = torch.zeros_like(matched_idxs) + self.num_classes
@@ -223,7 +223,7 @@ class ROIHeads(torch.nn.Module):
         """
         Prepare some proposals to be used to train the ROI heads.
         It performs box matching between `proposals` and `targets`, and assigns
-        training labels to the proposals.
+        training ori_annotation_file_list to the proposals.
         It returns ``self.batch_size_per_image`` random samples from proposals and groundtruth
         boxes, with a fraction of positives that is no larger than
         ``self.positive_fraction``.
@@ -238,7 +238,7 @@ class ROIHeads(torch.nn.Module):
 
                 - proposal_boxes: the proposal boxes
                 - gt_boxes: the ground-truth box that the proposal is assigned to
-                  (this is only meaningful if the proposal has a label > 0; if label = 0
+                  (this is only meaningful if the proposal has a ori_annotation_file > 0; if ori_annotation_file = 0
                   then the ground-truth box is random)
 
                 Other fields such as "gt_classes", "gt_masks", that's included in `targets`.
@@ -282,13 +282,13 @@ class ROIHeads(torch.nn.Module):
                 # NOTE: here the indexing waste some compute, because heads
                 # like masks, keypoints, etc, will filter the proposals again,
                 # (by foreground/background, or number of keypoints in the image, etc)
-                # so we essentially index the data twice.
+                # so we essentially index the datas twice.
                 for (trg_name, trg_value) in targets_per_image.get_fields().items():
                     if trg_name.startswith("gt_") and not proposals_per_image.has(trg_name):
                         proposals_per_image.set(trg_name, trg_value[sampled_targets])
             # If no GT is given in the image, we don't know what a dummy gt value can be.
             # Therefore the returned proposals won't have any gt_* fields, except for a
-            # gt_classes full of background label.
+            # gt_classes full of background ori_annotation_file.
 
             num_bg_samples.append((gt_classes == self.num_classes).sum().item())
             num_fg_samples.append(gt_classes.numel() - num_bg_samples[-1])
@@ -311,9 +311,9 @@ class ROIHeads(torch.nn.Module):
         """
         Args:
             images (ImageList):
-            features (dict[str,Tensor]): input data as a mapping from feature
+            features (dict[str,Tensor]): input datas as a mapping from feature
                 map name to tensor. Axis 0 represents the number of images `N` in
-                the input data; axes 1-3 are channels, height, and width, which may
+                the input datas; axes 1-3 are channels, height, and width, which may
                 vary between feature maps (e.g., if a feature pyramid is used).
             proposals (list[Instances]): length `N` list of `Instances`. The i-th
                 `Instances` contains object proposals for the i-th input image,
@@ -324,7 +324,7 @@ class ROIHeads(torch.nn.Module):
                 It may have the following fields:
 
                 - gt_boxes: the bounding box of each instance.
-                - gt_classes: the label for each instance with a category ranging in [0, #class].
+                - gt_classes: the ori_annotation_file for each instance with a category ranging in [0, #class].
                 - gt_masks: PolygonMasks or BitMasks, the ground-truth masks of each instance.
                 - gt_keypoints: NxKx3, the groud-truth keypoints for each instance.
 
@@ -452,11 +452,17 @@ class Res5ROIHeads(ROIHeads):
         )
         return nn.Sequential(*blocks), out_channels
 
-    def _shared_roi_transform(self, features, boxes):
+    def _shared_roi_transform(self, features: List[torch.Tensor], boxes: List[Boxes]):
         x = self.pooler(features, boxes)
         return self.res5(x)
 
-    def forward(self, images, features, proposals, targets=None):
+    def forward(
+        self,
+        images: ImageList,
+        features: Dict[str, torch.Tensor],
+        proposals: List[Instances],
+        targets: Optional[List[Instances]] = None,
+    ):
         """
         See :meth:`ROIHeads.forward`.
         """
@@ -493,7 +499,9 @@ class Res5ROIHeads(ROIHeads):
             pred_instances = self.forward_with_given_boxes(features, pred_instances)
             return pred_instances, {}
 
-    def forward_with_given_boxes(self, features, instances):
+    def forward_with_given_boxes(
+        self, features: Dict[str, torch.Tensor], instances: List[Instances]
+    ) -> List[Instances]:
         """
         Use the given boxes in `instances` to produce other (non-box) per-ROI outputs.
 
@@ -511,8 +519,8 @@ class Res5ROIHeads(ROIHeads):
         assert instances[0].has("pred_boxes") and instances[0].has("pred_classes")
 
         if self.mask_on:
-            features = [features[f] for f in self.in_features]
-            x = self._shared_roi_transform(features, [x.pred_boxes for x in instances])
+            feature_list = [features[f] for f in self.in_features]
+            x = self._shared_roi_transform(feature_list, [x.pred_boxes for x in instances])
             return self.mask_head(x, instances)
         else:
             return instances

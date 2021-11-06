@@ -17,20 +17,20 @@ Trident Network (TridentNet) aims to generate scale-specific feature maps with a
 
 To train a model, run
 ```bash
-python /path/to/detectron2/projects/TridentNet/train_net.py --config-file <config.yaml>
+python /path/to/detectron2/projects/TridentNet/train_net_pycallgraph.py --config-file <config.yaml>
 ```
 
 For example, to launch end-to-end TridentNet training with ResNet-50 backbone on 8 GPUs,
 one should execute:
 ```bash
-python /path/to/detectron2/projects/TridentNet/train_net.py --config-file configs/tridentnet_fast_R_50_C4_1x.yaml --num-gpus 8
+python /path/to/detectron2/projects/TridentNet/train_net_pycallgraph.py --config-file configs/tridentnet_fast_R_50_C4_1x.yaml --num-gpus 8
 ```
 
 ## Evaluation
 
 Model evaluation can be done similarly:
 ```bash
-python /path/to/detectron2/projects/TridentNet/train_net.py --config-file configs/tridentnet_fast_R_50_C4_1x.yaml --eval-only MODEL.WEIGHTS model.pth
+python /path/to/detectron2/projects/TridentNet/train_net_pycallgraph.py --config-file configs/tridentnet_fast_R_50_C4_1x.yaml --eval-only MODEL.WEIGHTS model.pth
 ```
 
 ## Results on MS-COCO in Detectron2

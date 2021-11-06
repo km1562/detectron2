@@ -45,11 +45,11 @@ class ROIAlignRotatedTest(unittest.TestCase):
 
             # Here's an explanation for 0 degree case:
             # point 0 in the original input lies at [0.5, 0.5]
-            # (the center of bin [0, 1] x [0, 1])
+            # (the center of bin [0, 1] features [0, 1])
             # point 1 in the original input lies at [1.5, 0.5], etc.
-            # since the resolution is (4, 4) that divides [1, 3] x [1, 3]
-            # into 4 x 4 equal bins,
-            # the top-left bin is [1, 1.5] x [1, 1.5], and its center
+            # since the resolution is (4, 4) that divides [1, 3] features [1, 3]
+            # into 4 features 4 equal bins,
+            # the top-left bin is [1, 1.5] features [1, 1.5], and its center
             # (1.25, 1.25) lies at the 3/4 position
             # between point 0 and point 1, point 5 and point 6,
             # point 0 and point 5, point 1 and point 6, so it can be calculated as
@@ -144,7 +144,7 @@ class ROIAlignRotatedTest(unittest.TestCase):
         ).to(device=device)
 
         x = torch.rand(1, 1, 10, 10, dtype=dtype, device=device, requires_grad=True)
-        # x_rotated = x.clone() won't work (will lead to grad_fun=CloneBackward)!
+        # x_rotated = features.clone() won't work (will lead to grad_fun=CloneBackward)!
         x_rotated = Variable(x.data.clone(), requires_grad=True)
 
         # roi_rotated format is (batch index, x_center, y_center, width, height, angle)

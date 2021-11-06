@@ -17,7 +17,7 @@ To use cityscapes, prepare data follow the [tutorial](https://detectron2.readthe
 To train a model with 8 GPUs run:
 ```bash
 cd /path/to/detectron2/projects/Panoptic-DeepLab
-python train_net.py --config-file configs/Cityscapes-PanopticSegmentation/panoptic_deeplab_R_52_os16_mg124_poly_90k_bs32_crop_512_1024_dsconv.yaml --num-gpus 8
+python train_net_pycallgraph.py --config-file configs/Cityscapes-PanopticSegmentation/panoptic_deeplab_R_52_os16_mg124_poly_90k_bs32_crop_512_1024_dsconv.yaml --num-gpus 8
 ```
 
 ## Evaluation
@@ -25,7 +25,7 @@ python train_net.py --config-file configs/Cityscapes-PanopticSegmentation/panopt
 Model evaluation can be done similarly:
 ```bash
 cd /path/to/detectron2/projects/Panoptic-DeepLab
-python train_net.py --config-file configs/Cityscapes-PanopticSegmentation/panoptic_deeplab_R_52_os16_mg124_poly_90k_bs32_crop_512_1024_dsconv.yaml --eval-only MODEL.WEIGHTS /path/to/model_checkpoint
+python train_net_pycallgraph.py --config-file configs/Cityscapes-PanopticSegmentation/panoptic_deeplab_R_52_os16_mg124_poly_90k_bs32_crop_512_1024_dsconv.yaml --eval-only MODEL.WEIGHTS /path/to/model_checkpoint
 ```
 
 ## Benchmark network speed
@@ -33,7 +33,7 @@ python train_net.py --config-file configs/Cityscapes-PanopticSegmentation/panopt
 If you want to benchmark the network speed without post-processing, you can run the evaluation script with `MODEL.PANOPTIC_DEEPLAB.BENCHMARK_NETWORK_SPEED True`:
 ```bash
 cd /path/to/detectron2/projects/Panoptic-DeepLab
-python train_net.py --config-file configs/Cityscapes-PanopticSegmentation/panoptic_deeplab_R_52_os16_mg124_poly_90k_bs32_crop_512_1024_dsconv.yaml --eval-only MODEL.WEIGHTS /path/to/model_checkpoint MODEL.PANOPTIC_DEEPLAB.BENCHMARK_NETWORK_SPEED True
+python train_net_pycallgraph.py --config-file configs/Cityscapes-PanopticSegmentation/panoptic_deeplab_R_52_os16_mg124_poly_90k_bs32_crop_512_1024_dsconv.yaml --eval-only MODEL.WEIGHTS /path/to/model_checkpoint MODEL.PANOPTIC_DEEPLAB.BENCHMARK_NETWORK_SPEED True
 ```
 
 ## Cityscapes Panoptic Segmentation

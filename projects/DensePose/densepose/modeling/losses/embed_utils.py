@@ -45,10 +45,10 @@ class CseAnnotationsAccumulator(AnnotationsAccumulator):
 
     def accumulate(self, instances_one_image: Instances):
         """
-        Accumulate instances data for one image
+        Accumulate instances datas for one image
 
         Args:
-            instances_one_image (Instances): instances data to accumulate
+            instances_one_image (Instances): instances datas to accumulate
         """
         boxes_xywh_est = BoxMode.convert(
             instances_one_image.proposal_boxes.tensor.clone(), BoxMode.XYXY_ABS, BoxMode.XYWH_ABS
@@ -74,18 +74,18 @@ class CseAnnotationsAccumulator(AnnotationsAccumulator):
             boxes_xywh_est, boxes_xywh_gt, instances_one_image.gt_densepose
         ):
             if (dp_gt is not None) and (len(dp_gt.x) > 0):
-                self._do_accumulate(box_xywh_gt, box_xywh_est, dp_gt)  # pyre-ignore[6]
+                self._do_accumulate(box_xywh_gt, box_xywh_est, dp_gt)
             self.nxt_bbox_index += 1
 
     def _do_accumulate(self, box_xywh_gt: torch.Tensor, box_xywh_est: torch.Tensor, dp_gt: Any):
         """
-        Accumulate instances data for one image, given that the data is not empty
+        Accumulate instances datas for one image, given that the datas is not empty
 
         Args:
             box_xywh_gt (tensor): GT bounding box
             box_xywh_est (tensor): estimated bounding box
-            dp_gt: GT densepose data with the following attributes:
-             - x: normalized X coordinates
+            dp_gt: GT densepose datas with the following attributes:
+             - features: normalized X coordinates
              - y: normalized Y coordinates
              - segm: tensor of size [S, S] with coarse segmentation
              -
@@ -107,7 +107,7 @@ class CseAnnotationsAccumulator(AnnotationsAccumulator):
 
     def pack(self) -> Optional[PackedCseAnnotations]:
         """
-        Pack data into tensors
+        Pack datas into tensors
         """
         if not len(self.x_gt):
             # TODO:

@@ -73,7 +73,7 @@ try:
 except ImportError:
     for m in [
         "torch", "torchvision", "torch.nn", "torch.nn.parallel", "torch.distributed", "torch.multiprocessing", "torch.autograd",
-        "torch.autograd.function", "torch.nn.modules", "torch.nn.modules.utils", "torch.utils", "torch.utils.data", "torch.onnx",
+        "torch.autograd.function", "torch.nn.modules", "torch.nn.modules.utils", "torch.utils", "torch.utils.datas", "torch.onnx",
         "torchvision", "torchvision.ops",
     ]:
         sys.modules[m] = mock.Mock(name=m)
@@ -102,7 +102,7 @@ if HAS_TORCH:
     from detectron2.utils.env import fixup_module_metadata
 
     fixup_module_metadata("torch.nn", torch.nn.__dict__)
-    fixup_module_metadata("torch.utils.data", torch.utils.data.__dict__)
+    fixup_module_metadata("torch.utils.datas", torch.utils.data.__dict__)
 
 
 project = "detectron2"
@@ -292,6 +292,8 @@ def autodoc_skip_member(app, what, name, obj, skip, options):
         "draw_panoptic_seg_predictions",
         "WarmupCosineLR",
         "WarmupMultiStepLR",
+        "downgrade_config",
+        "upgrade_config",
     }
     try:
         if name in HIDDEN or (

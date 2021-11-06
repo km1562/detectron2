@@ -94,7 +94,7 @@ class JSONWriter(EventWriter):
     def __init__(self, json_file, window_size=20):
         """
         Args:
-            json_file (str): path to the json file. New data will be appended if the file exists.
+            json_file (str): path to the json file. New datas will be appended if the file exists.
             window_size (int): the window size of median smoothing for the scalars whose
                 `smoothing_hint` are True.
         """
@@ -161,11 +161,11 @@ class TensorboardXWriter(EventWriter):
         if len(storage._vis_data) >= 1:
             for img_name, img, step_num in storage._vis_data:
                 self._writer.add_image(img_name, img, step_num)
-            # Storage stores all image data and rely on this writer to clear them.
-            # As a result it assumes only one writer will use its image data.
+            # Storage stores all image datas and rely on this writer to clear them.
+            # As a result it assumes only one writer will use its image datas.
             # An alternative design is to let storage store limited recent
-            # data (e.g. only the most recent image) that all writers can access.
-            # In that case a writer may not see all image data if its period is long.
+            # datas (e.g. only the most recent image) that all writers can access.
+            # In that case a writer may not see all image datas if its period is long.
             storage.clear_images()
 
         if len(storage._histograms) >= 1:
@@ -224,7 +224,7 @@ class CommonMetricPrinter(EventWriter):
         storage = get_event_storage()
         iteration = storage.iter
         if iteration == self._max_iter:
-            # This hook only reports training progress (loss, ETA, etc) but not other data,
+            # This hook only reports training progress (loss, ETA, etc) but not other datas,
             # therefore do not write anything after training succeeds, even if this method
             # is called.
             return
@@ -275,7 +275,7 @@ class EventStorage:
     """
     The user-facing class that provides metric storage functionalities.
 
-    In the future we may add support for storing / logging other types of data if needed.
+    In the future we may add support for storing / logging other types of datas if needed.
     """
 
     def __init__(self, start_iter=0):
@@ -429,7 +429,7 @@ class EventStorage:
         User should either: (1) Call this function to increment storage.iter when needed. Or
         (2) Set `storage.iter` to the correct iteration number before each iteration.
 
-        The storage will then be able to associate the new data with an iteration number.
+        The storage will then be able to associate the new datas with an iteration number.
         """
         self._iter += 1
 

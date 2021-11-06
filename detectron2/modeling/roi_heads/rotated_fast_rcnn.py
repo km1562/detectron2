@@ -33,7 +33,7 @@ Naming convention:
     pred_class_logits: predicted class scores in [-inf, +inf]; use
         softmax(pred_class_logits) to estimate P(class).
 
-    gt_classes: ground-truth classification labels in [0, K], where [0, K) represent
+    gt_classes: ground-truth classification ori_annotation_file_list in [0, K], where [0, K) represent
         foreground object classes and K represents the background class.
 
     pred_proposal_deltas: predicted rotated box2box transform deltas for transforming proposals
@@ -54,10 +54,10 @@ def fast_rcnn_inference_rotated(
             boxes for each image. Element i has shape (Ri, K * 5) if doing
             class-specific regression, or (Ri, 5) if doing class-agnostic
             regression, where Ri is the number of predicted objects for image i.
-            This is compatible with the output of :meth:`FastRCNNOutputs.predict_boxes`.
+            This is compatible with the output of :meth:`FastRCNNOutputLayers.predict_boxes`.
         scores (list[Tensor]): A list of Tensors of predicted class scores for each image.
             Element i has shape (Ri, K + 1), where Ri is the number of predicted objects
-            for image i. Compatible with the output of :meth:`FastRCNNOutputs.predict_probs`.
+            for image i. Compatible with the output of :meth:`FastRCNNOutputLayers.predict_probs`.
         image_shapes (list[tuple]): A list of (width, height) tuples for each image in the batch.
         score_thresh (float): Only return detections with a confidence score exceeding this
             threshold.
@@ -105,10 +105,10 @@ def fast_rcnn_inference_single_image_rotated(
     # Convert to Boxes to use the `clip` function ...
     boxes = RotatedBoxes(boxes.reshape(-1, B))
     boxes.clip(image_shape)
-    boxes = boxes.tensor.view(-1, num_bbox_reg_classes, B)  # R x C x B
+    boxes = boxes.tensor.view(-1, num_bbox_reg_classes, B)  # R features C features B
     # Filter results based on detection scores
-    filter_mask = scores > score_thresh  # R x K
-    # R' x 2. First column contains indices of the R predictions;
+    filter_mask = scores > score_thresh  # R features K
+    # R' features 2. First column contains indices of the R predictions;
     # Second column contains indices of classes.
     filter_inds = filter_mask.nonzero()
     if num_bbox_reg_classes == 1:
@@ -218,7 +218,7 @@ class RROIHeads(StandardROIHeads):
         """
         Prepare some proposals to be used to train the RROI heads.
         It performs box matching between `proposals` and `targets`, and assigns
-        training labels to the proposals.
+        training ori_annotation_file_list to the proposals.
         It returns `self.batch_size_per_image` random samples from proposals and groundtruth boxes,
         with a fraction of positives that is no larger than `self.positive_sample_fraction.
 
@@ -230,7 +230,7 @@ class RROIHeads(StandardROIHeads):
                 sampled for training. Each `Instances` has the following fields:
                 - proposal_boxes: the rotated proposal boxes
                 - gt_boxes: the ground-truth rotated boxes that the proposal is assigned to
-                  (this is only meaningful if the proposal has a label > 0; if label = 0
+                  (this is only meaningful if the proposal has a ori_annotation_file > 0; if ori_annotation_file = 0
                    then the ground-truth box is random)
                 - gt_classes: the ground-truth classification lable for each proposal
         """

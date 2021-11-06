@@ -1,6 +1,10 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 from .config import CfgNode as CN
 
+# NOTE: given the new config system
+# (https://detectron2.readthedocs.io/en/latest/tutorials/lazyconfigs.html),
+# we will stop adding new functionalities to default CfgNode.
+
 # -----------------------------------------------------------------------------
 # Convention about Training / Test specific parameters
 # -----------------------------------------------------------------------------
@@ -57,13 +61,13 @@ _C.INPUT.MAX_SIZE_TRAIN = 1333
 _C.INPUT.MIN_SIZE_TEST = 800
 # Maximum size of the side of the image during testing
 _C.INPUT.MAX_SIZE_TEST = 1333
-# Mode for flipping images used in data augmentation during training
+# Mode for flipping images used in datas augmentation during training
 # choose one of ["horizontal, "vertical", "none"]
 _C.INPUT.RANDOM_FLIP = "horizontal"
 
-# `True` if cropping is used for data augmentation during training
+# `True` if cropping is used for datas augmentation during training
 _C.INPUT.CROP = CN({"ENABLED": False})
-# Cropping type. See documentation of `detectron2.data.transforms.RandomCrop` for explanation.
+# Cropping type. See documentation of `detectron2.datas.transforms.RandomCrop` for explanation.
 _C.INPUT.CROP.TYPE = "relative_range"
 # Size of crop in range (0, 1] if CROP.TYPE is "relative" or "relative_range" and in number of
 # pixels if CROP.TYPE is "absolute"
@@ -105,7 +109,7 @@ _C.DATASETS.PRECOMPUTED_PROPOSAL_TOPK_TEST = 1000
 # DataLoader
 # -----------------------------------------------------------------------------
 _C.DATALOADER = CN()
-# Number of data loading threads
+# Number of datas loading threads
 _C.DATALOADER.NUM_WORKERS = 4
 # If True, each batch should contain only images for which the aspect ratio
 # is compatible. This groups portrait images together, and landscape images
@@ -504,7 +508,8 @@ _C.MODEL.RESNETS.DEFORM_NUM_GROUPS = 1
 # ---------------------------------------------------------------------------- #
 _C.SOLVER = CN()
 
-# See detectron2/solver/build.py for LR scheduler options
+# Options: WarmupMultiStepLR, WarmupCosineLR.
+# See detectron2/solver/build.py for definition.
 _C.SOLVER.LR_SCHEDULER_NAME = "WarmupMultiStepLR"
 
 _C.SOLVER.MAX_ITER = 40000

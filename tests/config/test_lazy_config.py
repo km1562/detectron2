@@ -39,14 +39,14 @@ class TestLazyPythonConfig(unittest.TestCase):
 
     def test_overrides(self):
         cfg = LazyConfig.load(self.root_filename)
-        LazyConfig.apply_overrides(cfg, ["lazyobj.x=123", 'dir1b_dict.a="123"'])
+        LazyConfig.apply_overrides(cfg, ["lazyobj.features=123", 'dir1b_dict.a="123"'])
         self.assertEqual(cfg.dir1b_dict.a, "123")
         self.assertEqual(cfg.lazyobj.x, 123)
 
     def test_invalid_overrides(self):
         cfg = LazyConfig.load(self.root_filename)
         with self.assertRaises(KeyError):
-            LazyConfig.apply_overrides(cfg, ["lazyobj.x.xxx=123"])
+            LazyConfig.apply_overrides(cfg, ["lazyobj.features.xxx=123"])
 
     def test_to_py(self):
         cfg = LazyConfig.load(self.root_filename)
@@ -58,10 +58,10 @@ cfg.dir1a_dict.b = 2
 cfg.dir1b_dict.a = 1
 cfg.dir1b_dict.b = 2
 cfg.lazyobj = itertools.count(
-    x={
+    features={
         "a": 1,
         "b": 2,
-        "c": itertools.count(x={"r": "a", "s": 2.4, "t": [1, 2, 3, "z"]}),
+        "c": itertools.count(features={"r": "a", "s": 2.4, "t": [1, 2, 3, "z"]}),
     },
     y="base_a_1_from_b",
 )

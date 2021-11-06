@@ -1,5 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
-from .data.datasets import builtin  # just to register data
+from .data.datasets import builtin  # just to register datas
 from .converters import builtin as builtin_converters  # register converters
 from .config import (
     add_densepose_config,

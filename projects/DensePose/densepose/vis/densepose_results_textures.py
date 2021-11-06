@@ -28,7 +28,7 @@ class DensePoseResultsVisualizerWithTexture(DensePoseResultsVisualizer):
     """
     texture_atlas: An image, size 6N * 4N, with N * N squares for each of the 24 body parts.
             It must follow the grid found at https://github.com/facebookresearch/DensePose/blob/master/DensePoseData/demo_data/texture_atlas_200.png  # noqa
-            For each body part, U is proportional to the x coordinate, and (1 - V) to y
+            For each body part, U is proportional to the features coordinate, and (1 - V) to y
     """
 
     def __init__(self, texture_atlas, **kwargs):

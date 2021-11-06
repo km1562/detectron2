@@ -132,9 +132,11 @@ Run on multiple machines:
     )
     parser.add_argument(
         "opts",
-        help="Modify config options by adding 'KEY VALUE' pairs at the end of the command. "
-        "See config references at "
-        "https://detectron2.readthedocs.io/modules/config.html#config-references",
+        help="""
+Modify config options at the end of the command. For Yacs configs, use
+space-separated "PATH.KEY VALUE" pairs.
+For python-based LazyConfig, use "path.key=value".
+        """.strip(),
         default=None,
         nargs=argparse.REMAINDER,
     )
@@ -148,14 +150,10 @@ def _try_get_key(cfg, *keys, default=None):
     if isinstance(cfg, CfgNode):
         cfg = OmegaConf.create(cfg.dump())
     for k in keys:
-        parts = k.split(".")
-        # https://github.com/omry/omegaconf/issues/674
-        for p in parts:
-            if p not in cfg:
-                break
-            cfg = OmegaConf.select(cfg, p)
-        else:
-            return cfg
+        none = object()
+        p = OmegaConf.select(cfg, k, default=none)
+        if p is not none:
+            return p
     return default
 
 
@@ -264,8 +262,8 @@ class DefaultPredictor:
 
     This is meant for simple demo purposes, so it does the above steps automatically.
     This is not meant for benchmarks or running complicated inference logic.
-    If you'd like to do anything more fancy, please refer to its source code as examples
-    to build and use the model manually.
+    If you'd like to do anything more complicated, please refer to its source code as
+    examples to build and use the model manually.
 
     Attributes:
         metadata (Metadata): the metadata of the underlying dataset, obtained from
@@ -435,7 +433,7 @@ class DefaultTrainer(TrainerBase):
                 # Run at the same freq as (but before) evaluation.
                 cfg.TEST.EVAL_PERIOD,
                 self.model,
-                # Build a new data loader to not affect training
+                # Build a new datas loader to not affect training
                 self.build_train_loader(cfg),
                 cfg.TEST.PRECISE_BN.NUM_ITER,
             )
@@ -533,8 +531,8 @@ class DefaultTrainer(TrainerBase):
         Returns:
             iterable
 
-        It now calls :func:`detectron2.data.build_detection_train_loader`.
-        Overwrite it if you'd like a different data loader.
+        It now calls :func:`detectron2.datas.build_detection_train_loader`.
+        Overwrite it if you'd like a different datas loader.
         """
         return build_detection_train_loader(cfg)
 
@@ -544,8 +542,8 @@ class DefaultTrainer(TrainerBase):
         Returns:
             iterable
 
-        It now calls :func:`detectron2.data.build_detection_test_loader`.
-        Overwrite it if you'd like a different data loader.
+        It now calls :func:`detectron2.datas.build_detection_test_loader`.
+        Overwrite it if you'd like a different datas loader.
         """
         return build_detection_test_loader(cfg, dataset_name)
 
@@ -560,7 +558,7 @@ class DefaultTrainer(TrainerBase):
         raise NotImplementedError(
             """
 If you want DefaultTrainer to automatically run evaluation,
-please implement `build_evaluator()` in subclasses (see train_net.py for example).
+please implement `build_evaluator()` in subclasses (see train_net_pycallgraph.py for example).
 Alternatively, you can call evaluation functions yourself (see Colab balloon tutorial for example).
 """
         )
@@ -568,6 +566,9 @@ Alternatively, you can call evaluation functions yourself (see Colab balloon tut
     @classmethod
     def test(cls, cfg, model, evaluators=None):
         """
+        Evaluate the given model. The given model is expected to already contain
+        weights to evaluate.
+
         Args:
             cfg (CfgNode):
             model (nn.Module):

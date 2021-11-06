@@ -22,7 +22,7 @@ class DatasetMapper:
     A callable which takes a dataset dict in Detectron2 Dataset format,
     and map it into a format used by the model.
 
-    This is the default callable to be used to map your dataset dict into training data.
+    This is the default callable to be used to map your dataset dict into training datas.
     You may need to follow it to implement your own one for customized logic,
     such as a different way to read or transform images.
     See :doc:`/tutorials/data_loading` for details.
@@ -31,7 +31,7 @@ class DatasetMapper:
 
     1. Read the image from "file_name"
     2. Applies cropping/geometric transforms to the image and annotations
-    3. Prepare data and annotations to Tensor and :class:`Instances`
+    3. Prepare datas and annotations to Tensor and :class:`Instances`
     """
 
     @configurable
@@ -112,6 +112,35 @@ class DatasetMapper:
             )
         return ret
 
+    def _transform_annotations(self, dataset_dict, transforms, image_shape):
+        # USER: Modify this if you want to keep them for some reason.
+        for anno in dataset_dict["annotations"]:
+            if not self.use_instance_mask:
+                anno.pop("segmentation", None)
+            if not self.use_keypoint:
+                anno.pop("keypoints", None)
+
+        # USER: Implement additional transformations if you have other types of datas
+        annos = [
+            utils.transform_instance_annotations(
+                obj, transforms, image_shape, keypoint_hflip_indices=self.keypoint_hflip_indices
+            )
+            for obj in dataset_dict.pop("annotations")
+            if obj.get("iscrowd", 0) == 0
+        ]
+        instances = utils.annotations_to_instances(
+            annos, image_shape, mask_format=self.instance_mask_format
+        )
+
+        # After transforms such as cropping are applied, the bounding box may no longer
+        # tightly bound the object. As an example, imagine a triangle object
+        # [(0,0), (2,0), (0,2)] cropped by a box [(1,0),(2,2)] (XYXY format). The tight
+        # bounding box of the cropped triangle should be [(1,0),(2,1)], which is not equal to
+        # the intersection of original bounding box and the cropping box.
+        if self.recompute_boxes:
+            instances.gt_boxes = instances.gt_masks.get_bounding_boxes()
+        dataset_dict["instances"] = utils.filter_empty_instances(instances)
+
     def __call__(self, dataset_dict):
         """
         Args:
@@ -137,7 +166,7 @@ class DatasetMapper:
 
         image_shape = image.shape[:2]  # h, w
         # Pytorch's dataloader is efficient on torch.Tensor due to shared-memory,
-        # but not efficient on large generic data structures due to the use of pickle & mp.Queue.
+        # but not efficient on large generic datas structures due to the use of pickle & mp.Queue.
         # Therefore it's important to use torch.Tensor.
         dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
         if sem_seg_gt is not None:
@@ -157,31 +186,6 @@ class DatasetMapper:
             return dataset_dict
 
         if "annotations" in dataset_dict:
-            # USER: Modify this if you want to keep them for some reason.
-            for anno in dataset_dict["annotations"]:
-                if not self.use_instance_mask:
-                    anno.pop("segmentation", None)
-                if not self.use_keypoint:
-                    anno.pop("keypoints", None)
+            self._transform_annotations(dataset_dict, transforms, image_shape)
 
-            # USER: Implement additional transformations if you have other types of data
-            annos = [
-                utils.transform_instance_annotations(
-                    obj, transforms, image_shape, keypoint_hflip_indices=self.keypoint_hflip_indices
-                )
-                for obj in dataset_dict.pop("annotations")
-                if obj.get("iscrowd", 0) == 0
-            ]
-            instances = utils.annotations_to_instances(
-                annos, image_shape, mask_format=self.instance_mask_format
-            )
-
-            # After transforms such as cropping are applied, the bounding box may no longer
-            # tightly bound the object. As an example, imagine a triangle object
-            # [(0,0), (2,0), (0,2)] cropped by a box [(1,0),(2,2)] (XYXY format). The tight
-            # bounding box of the cropped triangle should be [(1,0),(2,1)], which is not equal to
-            # the intersection of original bounding box and the cropping box.
-            if self.recompute_boxes:
-                instances.gt_boxes = instances.gt_masks.get_bounding_boxes()
-            dataset_dict["instances"] = utils.filter_empty_instances(instances)
         return dataset_dict

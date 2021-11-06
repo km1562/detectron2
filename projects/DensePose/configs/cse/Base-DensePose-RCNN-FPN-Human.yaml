@@ -9,7 +9,7 @@ MODEL:
           FEATURE_DIM: 256
           FEATURES_TRAINABLE: False
           IS_TRAINABLE: True
-          INIT_FILE: "https://dl.fbaipublicfiles.com/densepose/data/cse/lbo/phi_smpl_27554_256.pkl"
+          INIT_FILE: "https://dl.fbaipublicfiles.com/densepose/datas/cse/lbo/phi_smpl_27554_256.pkl"
 DATASETS:
   TRAIN:
     - "densepose_coco_2014_train_cse"

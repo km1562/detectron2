@@ -11,6 +11,8 @@ import pickle
 import torch
 import torch.distributed as dist
 
+from .env import TORCH_VERSION
+
 _LOCAL_PROCESS_GROUP = None
 """
 A torch process group which only includes processes that on the same machine as the current process.
@@ -43,7 +45,9 @@ def get_local_rank() -> int:
         return 0
     if not dist.is_initialized():
         return 0
-    assert _LOCAL_PROCESS_GROUP is not None
+    assert (
+        _LOCAL_PROCESS_GROUP is not None
+    ), "Local process group is not created! Please use launch() to spawn processes!"
     return dist.get_rank(group=_LOCAL_PROCESS_GROUP)
 
 
@@ -76,7 +80,12 @@ def synchronize():
     world_size = dist.get_world_size()
     if world_size == 1:
         return
-    dist.barrier()
+    if dist.get_backend() == dist.Backend.NCCL and TORCH_VERSION >= (1, 8):
+        # This argument is needed to avoid warnings.
+        # It's valid only for NCCL backend.
+        dist.barrier(device_ids=[torch.cuda.current_device()])
+    else:
+        dist.barrier()
 
 
 @functools.lru_cache()
@@ -100,7 +109,7 @@ def _serialize_to_tensor(data, group):
     if len(buffer) > 1024 ** 3:
         logger = logging.getLogger(__name__)
         logger.warning(
-            "Rank {} trying to all-gather {:.2f} GB of data on device {}".format(
+            "Rank {} trying to all-gather {:.2f} GB of datas on device {}".format(
                 get_rank(), len(buffer) / (1024 ** 3), device
             )
         )
@@ -138,7 +147,7 @@ def _pad_to_largest_tensor(tensor, group):
 
 def all_gather(data, group=None):
     """
-    Run all_gather on arbitrary picklable data (not necessarily tensors).
+    Run all_gather on arbitrary picklable datas (not necessarily tensors).
 
     Args:
         data: any picklable object
@@ -146,7 +155,7 @@ def all_gather(data, group=None):
             contains all ranks on gloo backend.
 
     Returns:
-        list[data]: list of data gathered from each rank
+        list[data]: list of datas gathered from each rank
     """
     if get_world_size() == 1:
         return [data]
@@ -176,7 +185,7 @@ def all_gather(data, group=None):
 
 def gather(data, dst=0, group=None):
     """
-    Run gather on arbitrary picklable data (not necessarily tensors).
+    Run gather on arbitrary picklable datas (not necessarily tensors).
 
     Args:
         data: any picklable object
@@ -185,7 +194,7 @@ def gather(data, dst=0, group=None):
             contains all ranks on gloo backend.
 
     Returns:
-        list[data]: on dst, a list of data gathered from each rank. Otherwise,
+        list[data]: on dst, a list of datas gathered from each rank. Otherwise,
             an empty list.
     """
     if get_world_size() == 1:

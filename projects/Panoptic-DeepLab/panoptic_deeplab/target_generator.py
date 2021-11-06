@@ -21,7 +21,7 @@ class PanopticDeepLabTargetGenerator(object):
     ):
         """
         Args:
-            ignore_label: Integer, the ignore label for semantic segmentation.
+            ignore_label: Integer, the ignore ori_annotation_file for semantic segmentation.
             thing_ids: Set, a set of ids from contiguous category ids belonging
                 to thing categories.
             sigma: the sigma for Gaussian kernel.
@@ -55,16 +55,16 @@ class PanopticDeepLabTargetGenerator(object):
         reference: https://github.com/facebookresearch/detectron2/blob/master/datasets/prepare_panoptic_fpn.py#L18  # noqa
 
         Args:
-            panoptic: numpy.array, panoptic label, we assume it is already
+            panoptic: numpy.array, panoptic ori_annotation_file, we assume it is already
                 converted from rgb image by panopticapi.utils.rgb2id.
             segments_info (list[dict]): see detectron2 documentation of "Use Custom Datasets".
 
         Returns:
             A dictionary with fields:
-                - sem_seg: Tensor, semantic label, shape=(H, W).
+                - sem_seg: Tensor, semantic ori_annotation_file, shape=(H, W).
                 - center: Tensor, center heatmap, shape=(H, W).
                 - center_points: List, center coordinates, with tuple
-                    (y-coord, x-coord).
+                    (y-coord, features-coord).
                 - offset: Tensor, offset, shape=(2, H, W), first dim is
                     (offset_y, offset_x).
                 - sem_seg_weights: Tensor, loss weight for semantic prediction,
@@ -138,7 +138,7 @@ class PanopticDeepLabTargetGenerator(object):
                     self.g[gaussian_y0:gaussian_y1, gaussian_x0:gaussian_x1],
                 )
 
-                # generate offset (2, h, w) -> (y-dir, x-dir)
+                # generate offset (2, h, w) -> (y-dir, features-dir)
                 offset[0][mask_index] = center_y - y_coord[mask_index]
                 offset[1][mask_index] = center_x - x_coord[mask_index]
 

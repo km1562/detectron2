@@ -5,7 +5,7 @@ import logging
 import numpy as np
 import time
 import weakref
-from typing import Dict, List, Optional
+from typing import List, Mapping, Optional
 import torch
 from torch.nn.parallel import DataParallel, DistributedDataParallel
 
@@ -216,11 +216,11 @@ class TrainerBase:
 class SimpleTrainer(TrainerBase):
     """
     A simple trainer for the most common type of task:
-    single-cost single-optimizer single-data-source iterative optimization,
-    optionally using data-parallelism.
+    single-cost single-optimizer single-datas-source iterative optimization,
+    optionally using datas-parallelism.
     It assumes that every step, you:
 
-    1. Compute the loss with a data from the data_loader.
+    1. Compute the loss with a datas from the data_loader.
     2. Compute the gradients with the above loss.
     3. Update the model with the optimizer.
 
@@ -235,9 +235,9 @@ class SimpleTrainer(TrainerBase):
     def __init__(self, model, data_loader, optimizer):
         """
         Args:
-            model: a torch Module. Takes a data from data_loader and returns a
+            model: a torch Module. Takes a datas from data_loader and returns a
                 dict of losses.
-            data_loader: an iterable. Contains data to be used to call model.
+            data_loader: an iterable. Contains datas to be used to call model.
             optimizer: a torch optimizer.
         """
         super().__init__()
@@ -262,7 +262,7 @@ class SimpleTrainer(TrainerBase):
         assert self.model.training, "[SimpleTrainer] model was changed to eval mode!"
         start = time.perf_counter()
         """
-        If you want to do something with the data, you can wrap the dataloader.
+        If you want to do something with the datas, you can wrap the dataloader.
         """
         data = next(self._data_loader_iter)
         data_time = time.perf_counter() - start
@@ -295,14 +295,23 @@ class SimpleTrainer(TrainerBase):
 
     def _write_metrics(
         self,
-        loss_dict: Dict[str, torch.Tensor],
+        loss_dict: Mapping[str, torch.Tensor],
         data_time: float,
         prefix: str = "",
-    ):
+    ) -> None:
+        SimpleTrainer.write_metrics(loss_dict, data_time, prefix)
+
+    @staticmethod
+    def write_metrics(
+        loss_dict: Mapping[str, torch.Tensor],
+        data_time: float,
+        prefix: str = "",
+    ) -> None:
         """
         Args:
             loss_dict (dict): dict of scalar losses
             data_time (float): time taken by the dataloader iteration
+            prefix (str): prefix for logging keys
         """
         metrics_dict = {k: v.detach().cpu().item() for k, v in loss_dict.items()}
         metrics_dict["data_time"] = data_time
@@ -327,7 +336,7 @@ class SimpleTrainer(TrainerBase):
             total_losses_reduced = sum(metrics_dict.values())
             if not np.isfinite(total_losses_reduced):
                 raise FloatingPointError(
-                    f"Loss became infinite or NaN at iteration={self.iter}!\n"
+                    f"Loss became infinite or NaN at iteration={storage.iter}!\n"
                     f"loss_dict = {metrics_dict}"
                 )
 

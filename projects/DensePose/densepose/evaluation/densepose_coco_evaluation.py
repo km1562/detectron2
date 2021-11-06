@@ -47,15 +47,15 @@ class DensePoseEvalMode(str, Enum):
 
 
 class DensePoseDataMode(str, Enum):
-    # use estimated IUV data (default mode)
+    # use estimated IUV datas (default mode)
     IUV_DT = "iuvdt"
-    # use ground truth IUV data
+    # use ground truth IUV datas
     IUV_GT = "iuvgt"
-    # use ground truth labels I and set UV to 0
+    # use ground truth ori_annotation_file_list I and set UV to 0
     I_GT_UV_0 = "igtuv0"
-    # use ground truth labels I and estimated UV coordinates
+    # use ground truth ori_annotation_file_list I and estimated UV coordinates
     I_GT_UV_DT = "igtuvdt"
-    # use estimated labels I and set UV to 0
+    # use estimated ori_annotation_file_list I and set UV to 0
     I_DT_UV_0 = "idtuv0"
 
 
@@ -80,8 +80,8 @@ class DensePoseCocoEval(object):
     #  maxDets    - [1 10 100] M=3 thresholds on max detections per image
     #  iouType    - ['segm'] set iouType to 'segm', 'bbox', 'keypoints' or 'densepose'
     #  iouType replaced the now DEPRECATED useSegm parameter.
-    #  useCats    - [1] if true use category labels for evaluation
-    # Note: if useCats=0 category labels are ignored as in proposal scoring.
+    #  useCats    - [1] if true use category ori_annotation_file_list for evaluation
+    # Note: if useCats=0 category ori_annotation_file_list are ignored as in proposal scoring.
     # Note: multiple areaRngs [Ax2] and maxDets [Mx1] can be specified.
     #
     # evaluate(): evaluates detections on every image and every category and
@@ -174,7 +174,7 @@ class DensePoseCocoEval(object):
         self.Part_ids = np.array(SMPL_subdiv["Part_ID_subdiv"].squeeze())
         # Mean geodesic distances for parts.
         self.Mean_Distances = np.array([0, 0.351, 0.107, 0.126, 0.237, 0.173, 0.142, 0.128, 0.150])
-        # Coarse Part labels.
+        # Coarse Part ori_annotation_file_list.
         self.CoarseParts = np.array(
             [0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8]
         )
@@ -569,7 +569,7 @@ class DensePoseCocoEval(object):
                 .astype(np.uint8)
             )
         else:
-            raise Exception(f"No mask data in the detection: {dt}")
+            raise Exception(f"No mask datas in the detection: {dt}")
         raise ValueError('The prediction dict needs to contain either "densepose" or "cse_mask"')
 
     def _extract_iuv(
@@ -577,10 +577,10 @@ class DensePoseCocoEval(object):
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Extract arrays of I, U and V values at given points as numpy arrays
-        given the data mode stored in self._dpDataMode
+        given the datas mode stored in self._dpDataMode
         """
         if self._dpDataMode == DensePoseDataMode.IUV_DT:
-            # estimated labels and UV (default)
+            # estimated ori_annotation_file_list and UV (default)
             ipoints = densepose_data[0, py, px]
             upoints = densepose_data[1, py, px] / 255.0  # convert from uint8 by /255.
             vpoints = densepose_data[2, py, px] / 255.0
@@ -590,22 +590,22 @@ class DensePoseCocoEval(object):
             upoints = np.array(gt["dp_U"])
             vpoints = np.array(gt["dp_V"])
         elif self._dpDataMode == DensePoseDataMode.I_GT_UV_0:
-            # ground truth labels, UV = 0
+            # ground truth ori_annotation_file_list, UV = 0
             ipoints = np.array(gt["dp_I"])
             upoints = upoints * 0.0
             vpoints = vpoints * 0.0
         elif self._dpDataMode == DensePoseDataMode.I_GT_UV_DT:
-            # ground truth labels, estimated UV
+            # ground truth ori_annotation_file_list, estimated UV
             ipoints = np.array(gt["dp_I"])
             upoints = densepose_data[1, py, px] / 255.0  # convert from uint8 by /255.
             vpoints = densepose_data[2, py, px] / 255.0
         elif self._dpDataMode == DensePoseDataMode.I_DT_UV_0:
-            # estimated labels, UV = 0
+            # estimated ori_annotation_file_list, UV = 0
             ipoints = densepose_data[0, py, px]
             upoints = upoints * 0.0
             vpoints = vpoints * 0.0
         else:
-            raise ValueError(f"Unknown data mode: {self._dpDataMode}")
+            raise ValueError(f"Unknown datas mode: {self._dpDataMode}")
         return ipoints, upoints, vpoints
 
     def computeOgps_single_pair(self, dt, gt, py, px, pt_mask):
@@ -683,7 +683,7 @@ class DensePoseCocoEval(object):
     ):
         # 0-based mesh vertex indices
         cVertsGT = torch.as_tensor(gt["dp_vertex"], dtype=torch.int64)
-        # label for each pixel of the bbox, [H, W] tensor of long
+        # ori_annotation_file for each pixel of the bbox, [H, W] tensor of long
         labels_dt = resample_coarse_segm_tensor_to_bbox(
             coarse_segm.unsqueeze(0), bbox_xywh_abs
         ).squeeze(0)
@@ -1249,7 +1249,7 @@ class Params:
     def setDetParams(self):
         self.imgIds = []
         self.catIds = []
-        # np.arange causes trouble.  the data point on arange is slightly larger than the true value
+        # np.arange causes trouble.  the datas point on arange is slightly larger than the true value
         self.iouThrs = np.linspace(0.5, 0.95, int(np.round((0.95 - 0.5) / 0.05)) + 1, endpoint=True)
         self.recThrs = np.linspace(0.0, 1.00, int(np.round((1.00 - 0.0) / 0.01)) + 1, endpoint=True)
         self.maxDets = [1, 10, 100]
@@ -1265,7 +1265,7 @@ class Params:
     def setKpParams(self):
         self.imgIds = []
         self.catIds = []
-        # np.arange causes trouble.  the data point on arange is slightly larger than the true value
+        # np.arange causes trouble.  the datas point on arange is slightly larger than the true value
         self.iouThrs = np.linspace(0.5, 0.95, np.round((0.95 - 0.5) / 0.05) + 1, endpoint=True)
         self.recThrs = np.linspace(0.0, 1.00, np.round((1.00 - 0.0) / 0.01) + 1, endpoint=True)
         self.maxDets = [20]

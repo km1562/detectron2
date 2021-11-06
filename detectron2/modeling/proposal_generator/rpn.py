@@ -47,7 +47,7 @@ Naming convention:
     pred_objectness_logits: predicted objectness scores in [-inf, +inf]; use
         sigmoid(pred_objectness_logits) to estimate P(object).
 
-    gt_labels: ground-truth binary classification labels for objectness
+    gt_labels: ground-truth binary classification ori_annotation_file_list for objectness
 
     pred_anchor_deltas: predicted box2box transform deltas
 
@@ -212,7 +212,7 @@ class RPN(nn.Module):
                 for each level from a list of per-level features
             anchor_generator (nn.Module): a module that creates anchors from a
                 list of features. Usually an instance of :class:`AnchorGenerator`
-            anchor_matcher (Matcher): label the anchors by matching them with ground truth.
+            anchor_matcher (Matcher): ori_annotation_file the anchors by matching them with ground truth.
             box2box_transform (Box2BoxTransform): defines the transform from anchors boxes to
                 instance boxes
             batch_size_per_image (int): number of anchors per image to sample for training
@@ -287,16 +287,16 @@ class RPN(nn.Module):
     def _subsample_labels(self, label):
         """
         Randomly sample a subset of positive and negative examples, and overwrite
-        the label vector to the ignore value (-1) for all elements that are not
+        the ori_annotation_file vector to the ignore value (-1) for all elements that are not
         included in the sample.
 
         Args:
-            labels (Tensor): a vector of -1, 0, 1. Will be modified in-place and returned.
+            ori_annotation_file_list (Tensor): a vector of -1, 0, 1. Will be modified in-place and returned.
         """
         pos_idx, neg_idx = subsample_labels(
             label, self.batch_size_per_image, self.positive_fraction, 0
         )
-        # Fill with the ignore label (-1), then set positive and negative labels
+        # Fill with the ignore ori_annotation_file (-1), then set positive and negative ori_annotation_file_list
         label.fill_(-1)
         label.scatter_(0, pos_idx, 1)
         label.scatter_(0, neg_idx, 0)
@@ -314,7 +314,7 @@ class RPN(nn.Module):
 
         Returns:
             list[Tensor]:
-                List of #img tensors. i-th element is a vector of labels whose length is
+                List of #img tensors. i-th element is a vector of ori_annotation_file_list whose length is
                 the total number of anchors across all feature maps R = sum(Hi * Wi * A).
                 Label values are in {-1, 0, 1}, with meanings: -1 = ignore; 0 = negative
                 class; 1 = positive class.
@@ -348,7 +348,7 @@ class RPN(nn.Module):
                 anchors_inside_image = anchors.inside_box(image_size_i, self.anchor_boundary_thresh)
                 gt_labels_i[~anchors_inside_image] = -1
 
-            # A vector of labels (-1, 0, 1) for each anchor
+            # A vector of ori_annotation_file_list (-1, 0, 1) for each anchor
             gt_labels_i = self._subsample_labels(gt_labels_i)
 
             if len(gt_boxes_i) == 0:
@@ -437,9 +437,9 @@ class RPN(nn.Module):
         """
         Args:
             images (ImageList): input images of length `N`
-            features (dict[str, Tensor]): input data as a mapping from feature
+            features (dict[str, Tensor]): input datas as a mapping from feature
                 map name to tensor. Axis 0 represents the number of images `N` in
-                the input data; axes 1-3 are channels, height, and width, which may
+                the input datas; axes 1-3 are channels, height, and width, which may
                 vary between feature maps (e.g., if a feature pyramid is used).
             gt_instances (list[Instances], optional): a length `N` list of `Instances`s.
                 Each `Instances` stores ground-truth instances for the corresponding image.

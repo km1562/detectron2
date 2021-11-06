@@ -8,12 +8,12 @@ import torch
 @dataclass
 class DensePoseChartResult:
     """
-    DensePose results for chart-based methods represented by labels and inner
+    DensePose results for chart-based methods represented by ori_annotation_file_list and inner
     coordinates (U, V) of individual charts. Each chart is a 2D manifold
-    that has an associated label and is parameterized by two coordinates U and V.
+    that has an associated ori_annotation_file and is parameterized by two coordinates U and V.
     Both U and V take values in [0, 1].
     Thus the results are represented by two tensors:
-    - labels (tensor [H, W] of long): contains estimated label for each pixel of
+    - ori_annotation_file_list (tensor [H, W] of long): contains estimated ori_annotation_file for each pixel of
         the detection bounding box of size (H, W)
     - uv (tensor [2, H, W] of float): contains estimated U and V coordinates
         for each pixel of the detection bounding box of size (H, W)
@@ -36,7 +36,7 @@ class DensePoseChartResultWithConfidences:
     """
     We add confidence values to DensePoseChartResult
     Thus the results are represented by two tensors:
-    - labels (tensor [H, W] of long): contains estimated label for each pixel of
+    - ori_annotation_file_list (tensor [H, W] of long): contains estimated ori_annotation_file for each pixel of
         the detection bounding box of size (H, W)
     - uv (tensor [2, H, W] of float): contains estimated U and V coordinates
         for each pixel of the detection bounding box of size (H, W)
@@ -77,15 +77,15 @@ class DensePoseChartResultWithConfidences:
 @dataclass
 class DensePoseChartResultQuantized:
     """
-    DensePose results for chart-based methods represented by labels and quantized
+    DensePose results for chart-based methods represented by ori_annotation_file_list and quantized
     inner coordinates (U, V) of individual charts. Each chart is a 2D manifold
-    that has an associated label and is parameterized by two coordinates U and V.
+    that has an associated ori_annotation_file and is parameterized by two coordinates U and V.
     Both U and V take values in [0, 1].
     Quantized coordinates Uq and Vq have uint8 values which are obtained as:
       Uq = U * 255 (hence 0 <= Uq <= 255)
       Vq = V * 255 (hence 0 <= Vq <= 255)
     Thus the results are represented by one tensor:
-    - labels_uv_uint8 (tensor [3, H, W] of uint8): contains estimated label
+    - labels_uv_uint8 (tensor [3, H, W] of uint8): contains estimated ori_annotation_file
         and quantized coordinates Uq and Vq for each pixel of the detection
         bounding box of size (H, W)
     """

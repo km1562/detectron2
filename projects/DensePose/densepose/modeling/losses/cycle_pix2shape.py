@@ -80,7 +80,7 @@ class PixToShapeCycleLoss(nn.Module):
         """
         Args:
             proposals_with_gt (list of Instances): detections with associated
-                ground truth data; each item corresponds to instances detected
+                ground truth datas; each item corresponds to instances detected
                 on 1 image; the number of items corresponds to the number of
                 images in a batch
             densepose_predictor_outputs: an object of a dataclass that contains predictor
@@ -90,8 +90,8 @@ class PixToShapeCycleLoss(nn.Module):
                       instances on image i)
                   D = embedding space dimensionality (MODEL.ROI_DENSEPOSE_HEAD.CSE.EMBED_SIZE)
                   S = output size (width and height)
-            packed_annotations (PackedCseAnnotations): contains various data useful
-                for loss computation, each data is packed into a single tensor
+            packed_annotations (PackedCseAnnotations): contains various datas useful
+                for loss computation, each datas is packed into a single tensor
             embedder (nn.Module): module that computes vertex embeddings for different meshes
         """
         pix_embeds = densepose_predictor_outputs.embedding

@@ -10,7 +10,7 @@ instantiated by the recursive construction defined in the given config file.
 Besides lazy construction of models, dataloader, etc., this scripts expects a
 few common configuration parameters currently defined in "configs/common/train.py".
 To add more complicated training logic, you can easily add other configs
-in the config file and implement a new train_net.py to handle them.
+in the config file and implement a new train_net_pycallgraph.py to handle them.
 """
 import logging
 
@@ -50,7 +50,7 @@ def do_train(args, cfg):
             dataloader.evaluator: instantiate to evaluator for test set
             optimizer: instantaite to an optimizer
             lr_multiplier: instantiate to a fvcore scheduler
-            train: other misc config defined in `common_train.py`, including:
+            train: other misc config defined in `configs/common/train.py`, including:
                 output_dir (str)
                 init_checkpoint (str)
                 amp.enabled (bool)

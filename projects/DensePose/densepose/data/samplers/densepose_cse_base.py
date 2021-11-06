@@ -17,7 +17,7 @@ from .densepose_base import DensePoseBaseSampler
 
 class DensePoseCSEBaseSampler(DensePoseBaseSampler):
     """
-    Base DensePose sampler to produce DensePose data from DensePose predictions.
+    Base DensePose sampler to produce DensePose datas from DensePose predictions.
     Samples for each class are drawn according to some distribution over all pixels estimated
     to belong to that class.
     """
@@ -78,7 +78,7 @@ class DensePoseCSEBaseSampler(DensePoseBaseSampler):
 
         sampled_y = indices[0][index_sample] + 0.5
         sampled_x = indices[1][index_sample] + 0.5
-        # prepare / normalize data
+        # prepare / normalize datas
         _, _, w, h = bbox_xywh
         x = (sampled_x / w * 256.0).cpu().tolist()
         y = (sampled_y / h * 256.0).cpu().tolist()
@@ -92,7 +92,7 @@ class DensePoseCSEBaseSampler(DensePoseBaseSampler):
         self, instance: Instances, bbox_xywh: IntTupleBox
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
-        Method to get labels and DensePose results from an instance
+        Method to get ori_annotation_file_list and DensePose results from an instance
 
         Args:
             instance (Instances): an instance of `DensePoseEmbeddingPredictorOutput`
@@ -109,10 +109,10 @@ class DensePoseCSEBaseSampler(DensePoseBaseSampler):
         S = densepose_output.coarse_segm
         E = densepose_output.embedding
         _, _, w, h = bbox_xywh
-        embeddings = F.interpolate(E, size=(h, w), mode="bilinear")[0].cpu()
-        coarse_segm_resized = F.interpolate(S, size=(h, w), mode="bilinear")[0].cpu()
+        embeddings = F.interpolate(E, size=(h, w), mode="bilinear")[0]
+        coarse_segm_resized = F.interpolate(S, size=(h, w), mode="bilinear")[0]
         mask = coarse_segm_resized.argmax(0) > 0
-        other_values = torch.empty((0, h, w))
+        other_values = torch.empty((0, h, w), device=E.device)
         return mask, embeddings, other_values
 
     def _resample_mask(self, output: Any) -> torch.Tensor:

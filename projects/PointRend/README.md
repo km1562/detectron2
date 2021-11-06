@@ -19,7 +19,7 @@ This [Colab Notebook](https://colab.research.google.com/drive/1isGPL5h5_cKoPPhVL
 To train a model with 8 GPUs run:
 ```bash
 cd /path/to/detectron2/projects/PointRend
-python train_net.py --config-file configs/InstanceSegmentation/pointrend_rcnn_R_50_FPN_1x_coco.yaml --num-gpus 8
+python train_net_pycallgraph.py --config-file configs/InstanceSegmentation/pointrend_rcnn_R_50_FPN_1x_coco.yaml --num-gpus 8
 ```
 
 ## Evaluation
@@ -27,7 +27,7 @@ python train_net.py --config-file configs/InstanceSegmentation/pointrend_rcnn_R_
 Model evaluation can be done similarly:
 ```bash
 cd /path/to/detectron2/projects/PointRend
-python train_net.py --config-file configs/InstanceSegmentation/pointrend_rcnn_R_50_FPN_1x_coco.yaml --eval-only MODEL.WEIGHTS /path/to/model_checkpoint
+python train_net_pycallgraph.py --config-file configs/InstanceSegmentation/pointrend_rcnn_R_50_FPN_1x_coco.yaml --eval-only MODEL.WEIGHTS /path/to/model_checkpoint
 ```
 
 # Pretrained Models

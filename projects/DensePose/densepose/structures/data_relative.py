@@ -11,14 +11,14 @@ from densepose.structures.transform_data import DensePoseTransformData
 class DensePoseDataRelative(object):
     """
     Dense pose relative annotations that can be applied to any bounding box:
-        x - normalized X coordinates [0, 255] of annotated points
+        features - normalized X coordinates [0, 255] of annotated points
         y - normalized Y coordinates [0, 255] of annotated points
-        i - body part labels 0,...,24 for annotated points
+        i - body part ori_annotation_file_list 0,...,24 for annotated points
         u - body part U coordinates [0, 1] for annotated points
         v - body part V coordinates [0, 1] for annotated points
         segm - 256x256 segmentation mask with values 0,...,14
-    To obtain absolute x and y data wrt some bounding box one needs to first
-    divide the data by 256, multiply by the respective bounding box size
+    To obtain absolute features and y datas wrt some bounding box one needs to first
+    divide the datas by 256, multiply by the respective bounding box size
     and add bounding box offset:
         x_img = x0 + x_norm * w / 256.0
         y_img = y0 + y_norm * h / 256.0
@@ -33,7 +33,7 @@ class DensePoseDataRelative(object):
     U_KEY = "dp_U"
     # Key for V part coordinates in annotation dict (used in chart-based annotations)
     V_KEY = "dp_V"
-    # Key for I point labels in annotation dict (used in chart-based annotations)
+    # Key for I point ori_annotation_file_list in annotation dict (used in chart-based annotations)
     I_KEY = "dp_I"
     # Key for segmentation mask in annotation dict
     S_KEY = "dp_masks"
@@ -43,7 +43,7 @@ class DensePoseDataRelative(object):
     MESH_NAME_KEY = "ref_model"
     # Number of body parts in segmentation masks
     N_BODY_PARTS = 14
-    # Number of parts in point labels
+    # Number of parts in point ori_annotation_file_list
     N_PART_LABELS = 24
     MASK_SIZE = 256
 
@@ -95,7 +95,7 @@ class DensePoseDataRelative(object):
         # only rely on DensePose segmentation
         poly_specs = annotation[DensePoseDataRelative.S_KEY]
         if isinstance(poly_specs, torch.Tensor):
-            # data is already given as mask tensors, no need to decode
+            # datas is already given as mask tensors, no need to decode
             return poly_specs
         segm = torch.zeros((DensePoseDataRelative.MASK_SIZE,) * 2, dtype=torch.float32)
         if isinstance(poly_specs, dict):
@@ -117,7 +117,7 @@ class DensePoseDataRelative(object):
             DensePoseDataRelative.Y_KEY,
         ]:
             if key not in annotation:
-                return False, "no {key} data in the annotation".format(key=key)
+                return False, "no {key} datas in the annotation".format(key=key)
         valid_for_iuv_setting = all(
             key in annotation
             for key in [

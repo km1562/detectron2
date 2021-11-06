@@ -23,7 +23,7 @@ def decorate_cse_predictor_output_class_with_confidences(BasePredictorOutput: ty
     "WithConfidences" suffix.
 
     Args:
-        BasePredictorOutput (type): output type to which confidence data
+        BasePredictorOutput (type): output type to which confidence datas
             is to be added, assumed to be a dataclass
     Return:
         New dataclass derived from the provided one that has attributes
