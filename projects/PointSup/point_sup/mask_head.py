@@ -32,7 +32,7 @@ class MaskRCNNConvUpsamplePointSupHead(MaskRCNNConvUpsampleHead):
         """
         Args:
             x: input region feature(s) provided by :class:`ROIHeads`.
-            instances (list[Instances]): contains the boxes & ori_annotation_file_list corresponding
+            instances (list[Instances]): contains the boxes & labels corresponding
                 to the input features.
                 Exact format is up to its caller to decide.
                 Typically, this is the foreground instances in training, with

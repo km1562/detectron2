@@ -20,7 +20,7 @@ The registered object will be called with `obj(cfg, input_shape)`.
 def roi_mask_point_loss(mask_logits, instances, point_labels):
     """
     Compute the point-based loss for instance segmentation mask predictions
-    given point-wise mask prediction and its corresponding point-wise ori_annotation_file_list.
+    given point-wise mask prediction and its corresponding point-wise labels.
     Args:
         mask_logits (Tensor): A tensor of shape (R, C, P) or (R, 1, P) for class-specific or
             class-agnostic, where R is the total number of predicted masks in all images, C is the
@@ -29,7 +29,7 @@ def roi_mask_point_loss(mask_logits, instances, point_labels):
         instances (list[Instances]): A list of N Instances, where N is the number of images
             in the batch. These instances are in 1:1 correspondence with the `mask_logits`. So, i_th
             elememt of the list contains R_i objects and R_1 + ... + R_N is equal to R.
-            The ground-truth ori_annotation_file_list (class, box, mask, ...) associated with each instance are stored
+            The ground-truth labels (class, box, mask, ...) associated with each instance are stored
             in fields.
         point_labels (Tensor): A tensor of shape (R, P), where R is the total number of
             predicted masks and P is the number of points for each mask.

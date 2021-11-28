@@ -80,7 +80,7 @@ def assemble_rcnn_outputs_by_name(image_sizes, tensor_outputs, force_mask_on=Fal
     keypoints_out = tensor_outputs.get("keypoints_out", None)
     kps_score = tensor_outputs.get("kps_score", None)
     if keypoints_out is not None:
-        # keypoints_out: [N, 4, #kypoints], where 4 is in order of (features, y, score, prob)
+        # keypoints_out: [N, 4, #kypoints], where 4 is in order of (x, y, score, prob)
         keypoints_tensor = keypoints_out
         # NOTE: it's possible that prob is not calculated if "should_output_softmax"
         # is set to False in HeatmapMaxKeypoint, so just using raw score, seems
@@ -88,7 +88,7 @@ def assemble_rcnn_outputs_by_name(image_sizes, tensor_outputs, force_mask_on=Fal
         keypoint_xyp = keypoints_tensor.transpose(1, 2)[:, :, [0, 1, 2]]
         result.pred_keypoints = keypoint_xyp
     elif kps_score is not None:
-        # keypoint heatmap to sparse datas structure
+        # keypoint heatmap to sparse data structure
         pred_keypoint_logits = kps_score
         keypoint_head.keypoint_rcnn_inference(pred_keypoint_logits, [result])
 
@@ -206,13 +206,13 @@ class Caffe2MetaArch(Caffe2Compatible, torch.nn.Module):
         inputs have been batched already.
         """
         data, im_info = inputs
-        data = alias(data, "datas")
+        data = alias(data, "data")
         im_info = alias(im_info, "im_info")
         mean, std = self._wrapped_model.pixel_mean, self._wrapped_model.pixel_std
         normalized_data = (data - mean) / std
         normalized_data = alias(normalized_data, "normalized_data")
 
-        # Pack (datas, im_info) into ImageList which is recognized by self.inference.
+        # Pack (data, im_info) into ImageList which is recognized by self.inference.
         images = ImageList(tensor=normalized_data, image_sizes=im_info)
         return images
 

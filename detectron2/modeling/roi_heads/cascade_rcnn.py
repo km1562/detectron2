@@ -184,7 +184,7 @@ class CascadeROIHeads(StandardROIHeads):
                 losses.update({k + "_stage{}".format(stage): v for k, v in stage_losses.items()})
             return losses
         else:
-            # Each is a list[Tensor] of length #image. Each tensor is Ri features (K+1)
+            # Each is a list[Tensor] of length #image. Each tensor is Ri x (K+1)
             scores_per_stage = [h[0].predict_probs(h[1], h[2]) for h in head_outputs]
 
             # Average the scores across heads
@@ -229,7 +229,7 @@ class CascadeROIHeads(StandardROIHeads):
             matched_idxs, proposal_labels = self.proposal_matchers[stage](match_quality_matrix)
             if len(targets_per_image) > 0:
                 gt_classes = targets_per_image.gt_classes[matched_idxs]
-                # Label unmatched proposals (0 ori_annotation_file from matcher) as background (ori_annotation_file=num_classes)
+                # Label unmatched proposals (0 label from matcher) as background (label=num_classes)
                 gt_classes[proposal_labels == 0] = self.num_classes
                 gt_boxes = targets_per_image.gt_boxes[matched_idxs]
             else:
@@ -277,7 +277,7 @@ class CascadeROIHeads(StandardROIHeads):
     def _create_proposals_from_boxes(self, boxes, image_sizes):
         """
         Args:
-            boxes (list[Tensor]): per-image predicted boxes, each of shape Ri features 4
+            boxes (list[Tensor]): per-image predicted boxes, each of shape Ri x 4
             image_sizes (list[tuple]): list of image shapes in (h, w)
 
         Returns:

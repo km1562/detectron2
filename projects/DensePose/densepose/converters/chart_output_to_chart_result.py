@@ -27,7 +27,7 @@ def resample_uv_tensors_to_bbox(
     Args:
         u (tensor [1, C, H, W] of float): U coordinates
         v (tensor [1, C, H, W] of float): V coordinates
-        labels (tensor [H, W] of long): ori_annotation_file_list obtained by resampling segmentation
+        labels (tensor [H, W] of long): labels obtained by resampling segmentation
             outputs for the given bounding box
         box_xywh_abs (tuple of 4 int): bounding box that corresponds to predictor outputs
     Return:
@@ -56,7 +56,7 @@ def resample_uv_to_bbox(
     Args:
         predictor_output (DensePoseChartPredictorOutput): DensePose predictor
             output to be resampled
-        labels (tensor [H, W] of long): ori_annotation_file_list obtained by resampling segmentation
+        labels (tensor [H, W] of long): labels obtained by resampling segmentation
             outputs for the given bounding box
         box_xywh_abs (tuple of 4 int): bounding box that corresponds to predictor outputs
     Return:
@@ -109,7 +109,7 @@ def resample_confidences_to_bbox(
     Args:
         predictor_output (DensePoseChartPredictorOutput): DensePose predictor
             output to be resampled
-        labels (tensor [H, W] of long): ori_annotation_file_list obtained by resampling segmentation
+        labels (tensor [H, W] of long): labels obtained by resampling segmentation
             outputs for the given bounding box
         box_xywh_abs (tuple of 4 int): bounding box that corresponds to predictor outputs
     Return:
@@ -134,7 +134,7 @@ def resample_confidences_to_bbox(
     ]
     confidence_base = torch.zeros([h, w], dtype=torch.float32, device=predictor_output.u.device)
 
-    # assign datas from channels that correspond to the ori_annotation_file_list
+    # assign data from channels that correspond to the labels
     for key in confidence_names:
         resampled_confidence = F.interpolate(
             getattr(predictor_output, key), (h, w), mode="bilinear", align_corners=False
@@ -147,7 +147,7 @@ def resample_confidences_to_bbox(
             result[labels == part_id] = resampled_confidence[0, part_id][labels == part_id]
 
         if resampled_confidence.size(1) != predictor_output.u.size(1):
-            # confidence is not part-based, fill the datas with the first channel
+            # confidence is not part-based, fill the data with the first channel
             # (targeted for segmentation confidences that have only 1 channel)
             result = resampled_confidence[0, 0]
 

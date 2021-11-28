@@ -140,7 +140,7 @@ class DensePoseOutputsExtractor(object):
 
 class CompoundExtractor(object):
     """
-    Extracts datas for CompoundVisualizer
+    Extracts data for CompoundVisualizer
     """
 
     def __init__(self, extractors):
@@ -156,7 +156,7 @@ class CompoundExtractor(object):
 
 class NmsFilteredExtractor(object):
     """
-    Extracts datas in the format accepted by NmsFilteredVisualizer
+    Extracts data in the format accepted by NmsFilteredVisualizer
     """
 
     def __init__(self, extractor, iou_threshold):
@@ -182,7 +182,7 @@ class NmsFilteredExtractor(object):
 
 class ScoreThresholdedExtractor(object):
     """
-    Extracts datas in the format accepted by ScoreThresholdedVisualizer
+    Extracts data in the format accepted by ScoreThresholdedVisualizer
     """
 
     def __init__(self, extractor, min_score):

@@ -160,7 +160,7 @@ def _load_coco_annotations(json_file: str):
             Path to the file to load annotations from
     Returns:
         Instance of `pycocotools.coco.COCO` that provides access to annotations
-        datas
+        data
     """
     from pycocotools.coco import COCO
 
@@ -347,7 +347,7 @@ def create_video_frame_mapping(dataset_name, dataset_dicts):
 def load_coco_json(annotations_json_file: str, image_root: str, dataset_name: str):
     """
     Loads a JSON file with annotations in COCO instances format.
-    Replaces `detectron2.datas.datasets.coco.load_coco_json` to handle metadata
+    Replaces `detectron2.data.datasets.coco.load_coco_json` to handle metadata
     in a more flexible way. Postpones category mapping to a later stage to be
     able to combine several datasets with different (but coherent) sets of
     categories.
@@ -361,7 +361,7 @@ def load_coco_json(annotations_json_file: str, image_root: str, dataset_name: st
     dataset_name: str
         the name that identifies a dataset, e.g. "densepose_coco_2014_train"
     extra_annotation_keys: Optional[List[str]]
-        If provided, these keys are used to extract additional datas from
+        If provided, these keys are used to extract additional data from
         the annotations.
     """
     coco_api = _load_coco_annotations(PathManager.get_local_path(annotations_json_file))
@@ -394,7 +394,7 @@ def register_dataset(dataset_data: CocoDatasetInfo, datasets_root: Optional[str]
 
     Args:
     dataset_data: CocoDatasetInfo
-        Dataset datas
+        Dataset data
     datasets_root: Optional[str]
         Datasets root folder (default: None)
     """

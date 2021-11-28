@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class TrainingSampler(Sampler):
     """
-    In training, we only care about the "infinite stream" of training datas.
+    In training, we only care about the "infinite stream" of training data.
     So this sampler produces an infinite stream of indices and
     all workers cooperate to correctly shuffle the indices and sample different indices.
 
@@ -28,7 +28,7 @@ class TrainingSampler(Sampler):
     and will not be executed inside workers.
     But if this sampler is used in a way that it gets execute inside a dataloader
     worker, then extra work needs to be done to shard its outputs based on worker id.
-    This is required so that workers don't produce identical datas.
+    This is required so that workers don't produce identical data.
     :class:`ToIterableDataset` implements this logic.
     This note is true for all samplers in detectron2.
     """
@@ -36,7 +36,7 @@ class TrainingSampler(Sampler):
     def __init__(self, size: int, shuffle: bool = True, seed: Optional[int] = None):
         """
         Args:
-            size (int): the total number of datas of the underlying dataset to sample from
+            size (int): the total number of data of the underlying dataset to sample from
             shuffle (bool): whether to shuffle the indices or not
             seed (int): the initial seed of the shuffle. Must be the same
                 across all workers. If None, will use a random seed shared
@@ -72,7 +72,7 @@ class TrainingSampler(Sampler):
 class RandomSubsetTrainingSampler(TrainingSampler):
     """
     Similar to TrainingSampler, but only sample a random subset of indices.
-    This is useful when you want to estimate the accuracy vs datas-number curves by
+    This is useful when you want to estimate the accuracy vs data-number curves by
       training the model with different subset_ratio.
     """
 
@@ -86,8 +86,8 @@ class RandomSubsetTrainingSampler(TrainingSampler):
     ):
         """
         Args:
-            size (int): the total number of datas of the underlying dataset to sample from
-            subset_ratio (float): the ratio of subset datas to sample from the underlying dataset
+            size (int): the total number of data of the underlying dataset to sample from
+            subset_ratio (float): the ratio of subset data to sample from the underlying dataset
             shuffle (bool): whether to shuffle the indices or not
             seed_shuffle (int): the initial seed of the shuffle. Must be the same
                 across all workers. If None, will use a random seed shared
@@ -112,7 +112,7 @@ class RandomSubsetTrainingSampler(TrainingSampler):
         self._indexes_subset = indexes_randperm[: self._size_subset]
 
         logger.info("Using RandomSubsetTrainingSampler......")
-        logger.info(f"Randomly sample {self._size_subset} datas from the original {self._size} datas")
+        logger.info(f"Randomly sample {self._size_subset} data from the original {self._size} data")
 
     def _infinite_indices(self):
         g = torch.Generator()
@@ -166,7 +166,7 @@ class RepeatFactorTrainingSampler(Sampler):
 
         Args:
             dataset_dicts (list[dict]): annotations in Detectron2 dataset format.
-            repeat_thresh (float): frequency threshold below which datas is repeated.
+            repeat_thresh (float): frequency threshold below which data is repeated.
                 If the frequency is half of `repeat_thresh`, the image will be
                 repeated twice.
 
@@ -253,7 +253,7 @@ class InferenceSampler(Sampler):
     def __init__(self, size: int):
         """
         Args:
-            size (int): the total number of datas of the underlying dataset to sample from
+            size (int): the total number of data of the underlying dataset to sample from
         """
         self._size = size
         assert size > 0

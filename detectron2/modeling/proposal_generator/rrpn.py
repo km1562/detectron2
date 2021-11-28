@@ -59,7 +59,7 @@ def find_top_rrpn_proposals(
     device = proposals[0].device
 
     # 1. Select top-k anchor for every level and every image
-    topk_scores = []  # #lvl Tensor, each of shape N features topk
+    topk_scores = []  # #lvl Tensor, each of shape N x topk
     topk_proposals = []
     level_ids = []  # #lvl Tensor, each of shape (topk,)
     batch_idx = torch.arange(num_images, device=device)
@@ -75,8 +75,8 @@ def find_top_rrpn_proposals(
         topk_scores_i = logits_i[batch_idx, :num_proposals_i]
         topk_idx = idx[batch_idx, :num_proposals_i]
 
-        # each is N features topk
-        topk_proposals_i = proposals_i[batch_idx[:, None], topk_idx]  # N features topk features 5
+        # each is N x topk
+        topk_proposals_i = proposals_i[batch_idx[:, None], topk_idx]  # N x topk x 5
 
         topk_proposals.append(topk_proposals_i)
         topk_scores.append(topk_scores_i)
@@ -150,7 +150,7 @@ class RRPN(RPN):
 
         Returns:
             list[Tensor]:
-                List of #img tensors. i-th element is a vector of ori_annotation_file_list whose length is
+                List of #img tensors. i-th element is a vector of labels whose length is
                 the total number of anchors across feature maps. Label values are in {-1, 0, 1},
                 with meanings: -1 = ignore; 0 = negative class; 1 = positive class.
             list[Tensor]:
@@ -174,7 +174,7 @@ class RRPN(RPN):
             # Matching is memory-expensive and may result in CPU tensors. But the result is small
             gt_labels_i = gt_labels_i.to(device=gt_boxes_i.device)
 
-            # A vector of ori_annotation_file_list (-1, 0, 1) for each anchor
+            # A vector of labels (-1, 0, 1) for each anchor
             gt_labels_i = self._subsample_labels(gt_labels_i)
 
             if len(gt_boxes_i) == 0:

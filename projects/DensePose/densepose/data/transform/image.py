@@ -6,8 +6,8 @@ import torch
 class ImageResizeTransform:
     """
     Transform that resizes images loaded from a dataset
-    (BGR datas in NCHW channel order, typically uint8) to a format ready to be
-    consumed by DensePose training (BGR float32 datas in NCHW channel order)
+    (BGR data in NCHW channel order, typically uint8) to a format ready to be
+    consumed by DensePose training (BGR float32 data in NCHW channel order)
     """
 
     def __init__(self, min_size: int = 800, max_size: int = 1333):
@@ -18,12 +18,12 @@ class ImageResizeTransform:
         """
         Args:
             images (torch.Tensor): tensor of size [N, 3, H, W] that contains
-                BGR datas (typically in uint8)
+                BGR data (typically in uint8)
         Returns:
             images (torch.Tensor): tensor of size [N, 3, H1, W1] where
                 H1 and W1 are chosen to respect the specified min and max sizes
-                and preserve the original aspect ratio, the datas channels
-                follow BGR order and the datas type is `torch.float32`
+                and preserve the original aspect ratio, the data channels
+                follow BGR order and the data type is `torch.float32`
         """
         # resize with min size
         images = images.float()

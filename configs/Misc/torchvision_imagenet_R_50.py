@@ -30,7 +30,7 @@ from detectron2.utils import comm
 
 
 """
-Note: Here we put reusable code (models, evaluation, datas) together with configs just as a
+Note: Here we put reusable code (models, evaluation, data) together with configs just as a
 proof-of-concept, to easily demonstrate what's needed to train a ImageNet classifier in detectron2.
 Writing code in configs offers extreme flexibility but is often not a good engineering practice.
 In practice, you might want to put code in your project and import them instead.

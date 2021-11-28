@@ -41,5 +41,5 @@ class TestLocate(unittest.TestCase):
 
         name = _convert_target_to_string(RandomCrop)
         # name shouldn't contain 'augmentation_impl'
-        self.assertEqual(name, "detectron2.datas.transforms.RandomCrop")
+        self.assertEqual(name, "detectron2.data.transforms.RandomCrop")
         self.assertIs(RandomCrop, locate(name))

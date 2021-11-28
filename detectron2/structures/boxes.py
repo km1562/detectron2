@@ -191,7 +191,7 @@ class Boxes:
 
     def clip(self, box_size: Tuple[int, int]) -> None:
         """
-        Clip (in place) the boxes by limiting features coordinates to the range [0, width]
+        Clip (in place) the boxes by limiting x coordinates to the range [0, width]
         and y coordinates to the range [0, height].
 
         Args:
@@ -273,7 +273,7 @@ class Boxes:
     def get_centers(self) -> torch.Tensor:
         """
         Returns:
-            The box centers in a Nx2 array of (features, y).
+            The box centers in a Nx2 array of (x, y).
         """
         return (self.tensor[:, :2] + self.tensor[:, 2:]) / 2
 
@@ -322,7 +322,7 @@ class Boxes:
 def pairwise_intersection(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
     """
     Given two lists of boxes of size N and M,
-    compute the intersection area between __all__ N features M pairs of boxes.
+    compute the intersection area between __all__ N x M pairs of boxes.
     The box order must be (xmin, ymin, xmax, ymax)
 
     Args:
@@ -346,7 +346,7 @@ def pairwise_intersection(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
 def pairwise_iou(boxes1: Boxes, boxes2: Boxes) -> torch.Tensor:
     """
     Given two lists of boxes of size N and M, compute the IoU
-    (intersection over union) between **all** N features M pairs of boxes.
+    (intersection over union) between **all** N x M pairs of boxes.
     The box order must be (xmin, ymin, xmax, ymax).
 
     Args:
@@ -395,7 +395,7 @@ def pairwise_point_box_distance(points: torch.Tensor, boxes: Boxes):
     of the box. Distances are all positive when the point is inside the box.
 
     Args:
-        points: Nx2 coordinates. Each row is (features, y)
+        points: Nx2 coordinates. Each row is (x, y)
         boxes: M boxes
 
     Returns:

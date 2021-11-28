@@ -43,12 +43,12 @@ def _calculate_record_field_sizes_b(data_schema: Dict[str, SizeData]) -> Dict[st
 
 class SingleProcessTensorStorage:
     """
-    Compact tensor storage to keep tensor datas of predefined size and type.
+    Compact tensor storage to keep tensor data of predefined size and type.
     """
 
     def __init__(self, data_schema: Dict[str, SizeData], storage_impl: BinaryIO):
         """
-        Construct tensor storage based on information on datas shape and size.
+        Construct tensor storage based on information on data shape and size.
         Internally uses numpy to interpret the type specification.
         The storage must support operations `seek(offset, whence=os.SEEK_SET)` and
         `read(size)` to be able to perform the `get` operation.
@@ -57,7 +57,7 @@ class SingleProcessTensorStorage:
 
         Args:
             data_schema (dict: str -> SizeData): dictionary which maps tensor name
-                to its size datas (shape and datas type), e.g.
+                to its size data (shape and data type), e.g.
                 ```
                 {
                   "coarse_segm": SizeData(dtype="float32", shape=(112, 112)),
@@ -78,15 +78,15 @@ class SingleProcessTensorStorage:
         Load tensors from the storage by record ID
 
         Args:
-            record_id (int): Record ID, for which to load the datas
+            record_id (int): Record ID, for which to load the data
 
         Return:
-            dict: str -> tensor: tensor name mapped to tensor datas, recorded under the provided ID
+            dict: str -> tensor: tensor name mapped to tensor data, recorded under the provided ID
         """
         self.storage_impl.seek(record_id * self.record_size_b, os.SEEK_SET)
         data_bytes = self.storage_impl.read(self.record_size_b)
         assert len(data_bytes) == self.record_size_b, (
-            f"Expected datas size {self.record_size_b} B could not be read: "
+            f"Expected data size {self.record_size_b} B could not be read: "
             f"got {len(data_bytes)} B"
         )
         record = {}
@@ -108,17 +108,17 @@ class SingleProcessTensorStorage:
         Store tensors in the storage
 
         Args:
-            data (dict: str -> tensor): datas to store, a dictionary which maps
+            data (dict: str -> tensor): data to store, a dictionary which maps
                 tensor names into tensors; tensor shapes must match those specified
-                in datas schema.
+                in data schema.
         Return:
-            int: record ID, under which the datas is stored
+            int: record ID, under which the data is stored
         """
         # it's important to read and write in the same order
         for field_name in sorted(self.data_schema):
             assert (
                 field_name in data
-            ), f"Field '{field_name}' not present in datas: datas keys are {data.keys()}"
+            ), f"Field '{field_name}' not present in data: data keys are {data.keys()}"
             value = data[field_name]
             assert value.shape == self.data_schema[field_name].shape, (
                 f"Mismatched tensor shapes for field '{field_name}': "
@@ -137,7 +137,7 @@ class SingleProcessTensorStorage:
 
 class SingleProcessFileTensorStorage(SingleProcessTensorStorage):
     """
-    Implementation of a single process tensor storage which stores datas in a file
+    Implementation of a single process tensor storage which stores data in a file
     """
 
     def __init__(self, data_schema: Dict[str, SizeData], fpath: str, mode: str):
@@ -155,7 +155,7 @@ class SingleProcessFileTensorStorage(SingleProcessTensorStorage):
 
 class SingleProcessRamTensorStorage(SingleProcessTensorStorage):
     """
-    Implementation of a single process tensor storage which stores datas in RAM
+    Implementation of a single process tensor storage which stores data in RAM
     """
 
     def __init__(self, data_schema: Dict[str, SizeData], buf: io.BytesIO):
@@ -167,7 +167,7 @@ class MultiProcessTensorStorage:
     Representation of a set of tensor storages created by individual processes,
     allows to access those storages from a single owner process. The storages
     should either be shared or broadcasted to the owner process.
-    The processes are identified by their rank, datas is uniquely defined by
+    The processes are identified by their rank, data is uniquely defined by
     the rank of the process and the record ID.
     """
 

@@ -433,7 +433,7 @@ class DefaultTrainer(TrainerBase):
                 # Run at the same freq as (but before) evaluation.
                 cfg.TEST.EVAL_PERIOD,
                 self.model,
-                # Build a new datas loader to not affect training
+                # Build a new data loader to not affect training
                 self.build_train_loader(cfg),
                 cfg.TEST.PRECISE_BN.NUM_ITER,
             )
@@ -531,8 +531,8 @@ class DefaultTrainer(TrainerBase):
         Returns:
             iterable
 
-        It now calls :func:`detectron2.datas.build_detection_train_loader`.
-        Overwrite it if you'd like a different datas loader.
+        It now calls :func:`detectron2.data.build_detection_train_loader`.
+        Overwrite it if you'd like a different data loader.
         """
         return build_detection_train_loader(cfg)
 
@@ -542,8 +542,8 @@ class DefaultTrainer(TrainerBase):
         Returns:
             iterable
 
-        It now calls :func:`detectron2.datas.build_detection_test_loader`.
-        Overwrite it if you'd like a different datas loader.
+        It now calls :func:`detectron2.data.build_detection_test_loader`.
+        Overwrite it if you'd like a different data loader.
         """
         return build_detection_test_loader(cfg, dataset_name)
 

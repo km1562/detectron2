@@ -27,7 +27,7 @@ class RotatedBoxes(Boxes):
                 the recommended principal range is between [-180, 180) degrees.
 
         Assume we have a horizontal box B = (x_center, y_center, width, height),
-        where width is along the features-axis and height is along the y-axis.
+        where width is along the x-axis and height is along the y-axis.
         The rotated box B_rot (x_center, y_center, width, height, angle)
         can be seen as:
 
@@ -39,7 +39,7 @@ class RotatedBoxes(Boxes):
            B_rot is obtained by rotating B w.r.t its center by :math:`|angle|` degrees CW.
 
         Mathematically, since the right-handed coordinate system for image space
-        is (y, features), where y is top->down and features is left->right, the 4 vertices of the
+        is (y, x), where y is top->down and x is left->right, the 4 vertices of the
         rotated rectangle :math:`(yr_i, xr_i)` (i = 1, 2, 3, 4) can be obtained from
         the vertices of the horizontal rectangle :math:`(y_i, x_i)` (i = 1, 2, 3, 4)
         in the following way (:math:`\\theta = angle*\\pi/180` is the angle in radians,
@@ -57,18 +57,18 @@ class RotatedBoxes(Boxes):
         (1) the rotation angle from y-axis in image space
         to the height vector (top->down in the box's local coordinate system)
         of the box in CCW, and
-        (2) the rotation angle from features-axis in image space
+        (2) the rotation angle from x-axis in image space
         to the width vector (left->right in the box's local coordinate system)
         of the box in CCW.
 
         More intuitively, consider the following horizontal box ABCD represented
         in (x1, y1, x2, y2): (3, 2, 7, 4),
-        covering the [3, 7] features [2, 4] region of the continuous coordinate system
+        covering the [3, 7] x [2, 4] region of the continuous coordinate system
         which looks like this:
 
         .. code:: none
 
-            O--------> features
+            O--------> x
             |
             |  A---B
             |  |   |
@@ -79,7 +79,7 @@ class RotatedBoxes(Boxes):
         Note that each capital letter represents one 0-dimensional geometric point
         instead of a 'square pixel' here.
 
-        In the example above, using (features, y) to represent a point we have:
+        In the example above, using (x, y) to represent a point we have:
 
         .. math::
 
@@ -87,14 +87,14 @@ class RotatedBoxes(Boxes):
 
         We name vector AB = vector DC as the width vector in box's local coordinate system, and
         vector AD = vector BC as the height vector in box's local coordinate system. Initially,
-        when angle = 0 degree, they're aligned with the positive directions of features-axis and y-axis
+        when angle = 0 degree, they're aligned with the positive directions of x-axis and y-axis
         in the image space, respectively.
 
         For better illustration, we denote the center of the box as E,
 
         .. code:: none
 
-            O--------> features
+            O--------> x
             |
             |  A---B
             |  | E |
@@ -121,7 +121,7 @@ class RotatedBoxes(Boxes):
 
         .. code:: none
 
-            O--------> features
+            O--------> x
             |   B-C
             |   | |
             |   |E|
@@ -135,7 +135,7 @@ class RotatedBoxes(Boxes):
 
         Here, 90 degrees can be seen as the CCW angle to rotate from y-axis to
         vector AD or vector BC (the top->down height vector in box's local coordinate system),
-        or the CCW angle to rotate from features-axis to vector AB or vector DC (the left->right
+        or the CCW angle to rotate from x-axis to vector AB or vector DC (the left->right
         width vector in box's local coordinate system).
 
         .. math::
@@ -148,7 +148,7 @@ class RotatedBoxes(Boxes):
 
         .. code:: none
 
-            O--------> features
+            O--------> x
             |   D-A
             |   | |
             |   |E|
@@ -178,7 +178,7 @@ class RotatedBoxes(Boxes):
 
         .. code:: none
 
-            O--------> features
+            O--------> x
             |
             |  C---D
             |  | E |
@@ -198,7 +198,7 @@ class RotatedBoxes(Boxes):
 
         .. code:: none
 
-            O--------> features
+            O--------> x
             |     B\
             |    /  C
             |   /E /
@@ -253,7 +253,7 @@ class RotatedBoxes(Boxes):
 
     def clip(self, box_size: Tuple[int, int], clip_angle_threshold: float = 1.0) -> None:
         """
-        Clip (in place) the boxes by limiting features coordinates to the range [0, width]
+        Clip (in place) the boxes by limiting x coordinates to the range [0, width]
         and y coordinates to the range [0, height].
 
         For RRPN:
@@ -349,7 +349,7 @@ class RotatedBoxes(Boxes):
         """
         Args:
             box_size (height, width): Size of the reference box covering
-                [0, width] features [0, height]
+                [0, width] x [0, height]
             boundary_threshold (int): Boxes that extend beyond the reference box
                 boundary by more than boundary_threshold are considered "outside".
 
@@ -385,7 +385,7 @@ class RotatedBoxes(Boxes):
     def get_centers(self) -> torch.Tensor:
         """
         Returns:
-            The box centers in a Nx2 array of (features, y).
+            The box centers in a Nx2 array of (x, y).
         """
         return self.tensor[:, :2]
 
@@ -404,7 +404,7 @@ class RotatedBoxes(Boxes):
         c = torch.cos(theta)
         s = torch.sin(theta)
 
-        # In image space, y is top->down and features is left->right
+        # In image space, y is top->down and x is left->right
         # Consider the local coordintate system for the rotated box,
         # where the box center is located at (0, 0), and the four vertices ABCD are
         # A(-w / 2, -h / 2), B(w / 2, -h / 2), C(w / 2, h / 2), D(-w / 2, h / 2)
@@ -414,7 +414,7 @@ class RotatedBoxes(Boxes):
         # F(0, -h / 2)
         # To get the old coordinates in the global system, apply the rotation transformation
         # (Note: the right-handed coordinate system for image space is yOx):
-        # (old_x, old_y) = (s * y + c * features, c * y - s * features)
+        # (old_x, old_y) = (s * y + c * x, c * y - s * x)
         # E(old) = (s * 0 + c * (-w/2), c * 0 - s * (-w/2)) = (-c * w / 2, s * w / 2)
         # F(old) = (s * (-h / 2) + c * 0, c * (-h / 2) - s * 0) = (-s * h / 2, -c * h / 2)
         # After applying the scaling factor (sfx, sfy):
@@ -491,7 +491,7 @@ def pairwise_iou(boxes1: RotatedBoxes, boxes2: RotatedBoxes) -> None:
     """
     Given two lists of rotated boxes of size N and M,
     compute the IoU (intersection over union)
-    between **all** N features M pairs of boxes.
+    between **all** N x M pairs of boxes.
     The box order must be (x_center, y_center, width, height, angle).
 
     Args:

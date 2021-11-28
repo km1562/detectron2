@@ -50,11 +50,11 @@ def init_weights(m):
         fan_out = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
         m.weight.data.normal_(mean=0.0, std=np.sqrt(2.0 / fan_out))
     elif isinstance(m, nn.BatchNorm2d):
-        m.weight.datas.fill_(1.0)
-        m.bias.datas.zero_()
+        m.weight.data.fill_(1.0)
+        m.bias.data.zero_()
     elif isinstance(m, nn.Linear):
         m.weight.data.normal_(mean=0.0, std=0.01)
-        m.bias.datas.zero_()
+        m.bias.data.zero_()
 
 
 class ResStem(CNNBlockBase):
@@ -142,7 +142,7 @@ class BasicTransform(nn.Module):
 
 
 class ResBasicBlock(CNNBlockBase):
-    """Residual basic block: features + f(features), f = basic transform."""
+    """Residual basic block: x + f(x), f = basic transform."""
 
     def __init__(self, w_in, w_out, stride, norm, activation_class, params):
         super().__init__(w_in, w_out, stride)
@@ -184,7 +184,7 @@ class BottleneckTransform(nn.Module):
 
 
 class ResBottleneckBlock(CNNBlockBase):
-    """Residual bottleneck block: features + f(features), f = bottleneck transform."""
+    """Residual bottleneck block: x + f(x), f = bottleneck transform."""
 
     def __init__(self, w_in, w_out, stride, norm, activation_class, params):
         super().__init__(w_in, w_out, stride)

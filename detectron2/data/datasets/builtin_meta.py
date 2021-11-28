@@ -259,7 +259,7 @@ def _get_coco_panoptic_separated_meta():
     # The id 0 is mapped to an extra category "thing".
     stuff_dataset_id_to_contiguous_id = {k: i + 1 for i, k in enumerate(stuff_ids)}
     # When converting COCO panoptic annotations to semantic annotations
-    # We ori_annotation_file the "thing" category to 0
+    # We label the "thing" category to 0
     stuff_dataset_id_to_contiguous_id[0] = 0
 
     # 54 names for COCO stuff categories (including "things")

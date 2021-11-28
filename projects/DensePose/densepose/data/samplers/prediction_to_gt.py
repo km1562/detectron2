@@ -40,16 +40,16 @@ class PredictionToGroundTruthSampler:
 
     def __call__(self, model_output: List[ModelOutput]) -> List[SampledData]:
         """
-        Transform model output into ground truth datas through sampling
+        Transform model output into ground truth data through sampling
 
         Args:
           model_output (Dict[str, Any]): model output
         Returns:
-          Dict[str, Any]: sampled datas
+          Dict[str, Any]: sampled data
         """
         for model_output_i in model_output:
             instances: Instances = model_output_i["instances"]
-            # transform datas in each field
+            # transform data in each field
             for _, sampler in self._samplers.items():
                 if not instances.has(sampler.src) or sampler.dst is None:
                     continue
@@ -57,7 +57,7 @@ class PredictionToGroundTruthSampler:
                     instances.set(sampler.dst, instances.get(sampler.src))
                 else:
                     instances.set(sampler.dst, sampler.func(instances))
-            # delete model output datas that was transformed
+            # delete model output data that was transformed
             for _, sampler in self._samplers.items():
                 if sampler.src != sampler.dst and instances.has(sampler.src):
                     instances.remove(sampler.src)

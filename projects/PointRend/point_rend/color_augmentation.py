@@ -7,7 +7,7 @@ from fvcore.transforms.transform import Transform
 
 class ColorAugSSDTransform(Transform):
     """
-    A color related datas augmentation used in Single Shot Multibox Detector (SSD).
+    A color related data augmentation used in Single Shot Multibox Detector (SSD).
 
     Wei Liu, Dragomir Anguelov, Dumitru Erhan, Christian Szegedy,
        Scott Reed, Cheng-Yang Fu, Alexander C. Berg.

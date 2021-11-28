@@ -258,7 +258,7 @@ def get_detection_dataset_dicts(names, filter_empty=True, min_keypoints=0, propo
         except AttributeError:  # class names are not available for this dataset
             pass
 
-    assert len(dataset_dicts), "No valid datas found in {}.".format(",".join(names))
+    assert len(dataset_dicts), "No valid data found in {}.".format(",".join(names))
     return dataset_dicts
 
 
@@ -266,7 +266,7 @@ def build_batch_data_loader(
     dataset, sampler, total_batch_size, *, aspect_ratio_grouping=False, num_workers=0
 ):
     """
-    Build a batched dataloader. The main differences from `torch.utils.datas.DataLoader` are:
+    Build a batched dataloader. The main differences from `torch.utils.data.DataLoader` are:
     1. support aspect ratio grouping options
     2. use no "batch collation", because this is common for detection training
 
@@ -375,11 +375,11 @@ def build_detection_train_loader(
             which coordinates an infinite random shuffle sequence across all workers.
             Sampler must be None if ``dataset`` is iterable.
         total_batch_size (int): total batch size across all workers. Batching
-            simply puts datas into a list.
+            simply puts data into a list.
         aspect_ratio_grouping (bool): whether to group images with similar
             aspect ratio for efficiency. When enabled, it requires each
             element in dataset be a dict with keys "width" and "height".
-        num_workers (int): number of parallel datas loading workers
+        num_workers (int): number of parallel data loading workers
 
     Returns:
         torch.utils.data.DataLoader:
@@ -447,7 +447,7 @@ def build_detection_test_loader(dataset, *, mapper, sampler=None, num_workers=0)
         sampler (torch.utils.data.sampler.Sampler or None): a sampler that produces
             indices to be applied on ``dataset``. Default to :class:`InferenceSampler`,
             which splits the dataset across all workers.
-        num_workers (int): number of parallel datas loading workers
+        num_workers (int): number of parallel data loading workers
 
     Returns:
         DataLoader: a torch DataLoader, that loads the given detection

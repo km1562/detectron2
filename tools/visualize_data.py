@@ -25,12 +25,12 @@ def setup(args):
 
 
 def parse_args(in_args=None):
-    parser = argparse.ArgumentParser(description="Visualize ground-truth datas")
+    parser = argparse.ArgumentParser(description="Visualize ground-truth data")
     parser.add_argument(
         "--source",
         choices=["annotation", "dataloader"],
         required=True,
-        help="visualize the annotations or the datas loader (with pre-processing)",
+        help="visualize the annotations or the data loader (with pre-processing)",
     )
     parser.add_argument("--config-file", metavar="FILE", help="path to config file")
     parser.add_argument("--output-dir", default="./", help="path to output directory")

@@ -165,9 +165,9 @@ def _cityscapes_files_to_dict(files, from_json, to_polygons):
         # We use reverse order, and each polygon *avoids* early ones.
         # This will resolve the ploygon overlaps in the same way as CityscapesScripts.
         for obj in jsonobj["objects"][::-1]:
-            if "deleted" in obj:  # cityscapes datas format specific
+            if "deleted" in obj:  # cityscapes data format specific
                 continue
-            label_name = obj["ori_annotation_file"]
+            label_name = obj["label"]
 
             try:
                 label = name2label[label_name]
@@ -176,7 +176,7 @@ def _cityscapes_files_to_dict(files, from_json, to_polygons):
                     label = name2label[label_name[: -len("group")]]
                 else:
                     raise
-            if label.id < 0:  # cityscapes datas format
+            if label.id < 0:  # cityscapes data format
                 continue
 
             # Cityscapes's raw annotations uses integer coordinates
@@ -229,7 +229,7 @@ def _cityscapes_files_to_dict(files, from_json, to_polygons):
         # https://github.com/mcordts/cityscapesScripts/blob/master/cityscapesscripts/evaluation/instances2dict.py  # noqa
         with PathManager.open(instance_id_file, "rb") as f:
             inst_image = np.asarray(Image.open(f), order="F")
-        # ids < 24 are stuff ori_annotation_file_list (filtering them first is about 5% faster)
+        # ids < 24 are stuff labels (filtering them first is about 5% faster)
         flattened_ids = np.unique(inst_image[inst_image >= 24])
 
         ret = {
@@ -283,7 +283,7 @@ if __name__ == "__main__":
     Test the cityscapes dataset loader.
 
     Usage:
-        python -m detectron2.datas.datasets.cityscapes \
+        python -m detectron2.data.datasets.cityscapes \
             cityscapes/leftImg8bit/train cityscapes/gtFine/train
     """
     import argparse
@@ -299,7 +299,7 @@ if __name__ == "__main__":
 
     logger = setup_logger(name=__name__)
 
-    dirname = "cityscapes-datas-vis"
+    dirname = "cityscapes-data-vis"
     os.makedirs(dirname, exist_ok=True)
 
     if args.type == "instance":

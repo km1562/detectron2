@@ -52,7 +52,7 @@ def get_point_annotations(input_filename, output_filename, num_points_per_instan
         point_coords_wrt_image[:, 1] += box[1]
         # round to integer coordinates
         point_coords_wrt_image = np.floor(point_coords_wrt_image).astype(int)
-        # get ori_annotation_file_list
+        # get labels
         assert (point_coords_wrt_image >= 0).all(), (point_coords_wrt_image, mask.shape)
         assert (point_coords_wrt_image[:, 0] < w).all(), (point_coords_wrt_image, mask.shape)
         assert (point_coords_wrt_image[:, 1] < h).all(), (point_coords_wrt_image, mask.shape)

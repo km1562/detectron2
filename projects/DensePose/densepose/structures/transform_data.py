@@ -18,7 +18,7 @@ def normalized_coords_transform(x0, y0, w, h):
 
 class DensePoseTransformData(object):
 
-    # Horizontal symmetry ori_annotation_file transforms used for horizontal flip
+    # Horizontal symmetry label transforms used for horizontal flip
     MASK_LABEL_SYMMETRIES = [0, 1, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 14]
     # fmt: off
     POINT_LABEL_SYMMETRIES = [ 0, 1, 2, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15, 18, 17, 20, 19, 22, 21, 24, 23]  # noqa
@@ -32,14 +32,14 @@ class DensePoseTransformData(object):
 
     def to(self, device: torch.device, copy: bool = False) -> "DensePoseTransformData":
         """
-        Convert transform datas to the specified device
+        Convert transform data to the specified device
 
         Args:
-            device (torch.device): device to convert the datas to
-            copy (bool): flag that specifies whether to copy or to reference the datas
+            device (torch.device): device to convert the data to
+            copy (bool): flag that specifies whether to copy or to reference the data
                 in case the device is the same
         Return:
-            An instance of `DensePoseTransformData` with datas stored on the specified device
+            An instance of `DensePoseTransformData` with data stored on the specified device
         """
         if self.device == device and not copy:
             return self
@@ -52,7 +52,7 @@ class DensePoseTransformData(object):
     def load(io: Union[str, BinaryIO]):
         """
         Args:
-            io: (str or binary file-like object): input file to load datas from
+            io: (str or binary file-like object): input file to load data from
         Returns:
             An instance of `DensePoseTransformData` with transforms loaded from the file
         """

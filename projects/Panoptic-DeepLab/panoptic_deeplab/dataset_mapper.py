@@ -20,9 +20,9 @@ class PanopticDeeplabDatasetMapper:
     """
     The callable currently does the following:
 
-    1. Read the image from "file_name" and ori_annotation_file from "pan_seg_file_name"
-    2. Applies random scale, crop and flip transforms to image and ori_annotation_file
-    3. Prepare datas to Tensor and generate training targets from ori_annotation_file
+    1. Read the image from "file_name" and label from "pan_seg_file_name"
+    2. Applies random scale, crop and flip transforms to image and label
+    3. Prepare data to Tensor and generate training targets from label
     """
 
     @configurable
@@ -96,16 +96,16 @@ class PanopticDeeplabDatasetMapper:
         # Load image.
         image = utils.read_image(dataset_dict["file_name"], format=self.image_format)
         utils.check_image_size(dataset_dict, image)
-        # Panoptic ori_annotation_file is encoded in RGB image.
+        # Panoptic label is encoded in RGB image.
         pan_seg_gt = utils.read_image(dataset_dict.pop("pan_seg_file_name"), "RGB")
 
-        # Reuses semantic transform for panoptic ori_annotation_file_list.
+        # Reuses semantic transform for panoptic labels.
         aug_input = T.AugInput(image, sem_seg=pan_seg_gt)
         _ = self.augmentations(aug_input)
         image, pan_seg_gt = aug_input.image, aug_input.sem_seg
 
         # Pytorch's dataloader is efficient on torch.Tensor due to shared-memory,
-        # but not efficient on large generic datas structures due to the use of pickle & mp.Queue.
+        # but not efficient on large generic data structures due to the use of pickle & mp.Queue.
         # Therefore it's important to use torch.Tensor.
         dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
 

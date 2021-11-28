@@ -26,7 +26,7 @@ from densepose.vis.densepose_data_points import (
     DensePoseDataPointsVVisualizer,
 )
 
-DOC = """Query DB - a tool to print / visualize datas from a database
+DOC = """Query DB - a tool to print / visualize data from a database
 """
 
 LOGGER_NAME = "query_db"

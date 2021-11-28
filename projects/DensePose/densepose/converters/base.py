@@ -7,7 +7,7 @@ import torch
 class BaseConverter:
     """
     Converter base class to be reused by various converters.
-    Converter allows one to convert datas from various source types to a particular
+    Converter allows one to convert data from various source types to a particular
     destination type. Each source type needs to register its converter. The
     registration for each source type is valid for all descendants of that type.
     """

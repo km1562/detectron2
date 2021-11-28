@@ -18,13 +18,13 @@ else:
 
 class Keypoints:
     """
-    Stores keypoint **annotation** datas. GT Instances have a `gt_keypoints` property
-    containing the features,y location and visibility flag of each keypoint. This tensor has shape
+    Stores keypoint **annotation** data. GT Instances have a `gt_keypoints` property
+    containing the x,y location and visibility flag of each keypoint. This tensor has shape
     (N, K, 3) where N is the number of instances and K is the number of keypoints per instance.
 
     The visibility flag follows the COCO format and must be one of three integers:
 
-    * v=0: not labeled (in which case features=y=0)
+    * v=0: not labeled (in which case x=y=0)
     * v=1: labeled but not visible
     * v=2: labeled and visible
     """
@@ -32,7 +32,7 @@ class Keypoints:
     def __init__(self, keypoints: Union[torch.Tensor, np.ndarray, List[List[float]]]):
         """
         Arguments:
-            keypoints: A Tensor, numpy array, or list of the features, y, and visibility of each keypoint.
+            keypoints: A Tensor, numpy array, or list of the x, y, and visibility of each keypoint.
                 The shape should be (N, K, 3) where N is the number of
                 instances, and K is the number of keypoints per instance.
         """
@@ -53,7 +53,7 @@ class Keypoints:
 
     def to_heatmap(self, boxes: torch.Tensor, heatmap_size: int) -> torch.Tensor:
         """
-        Convert keypoint annotations to a heatmap of one-hot ori_annotation_file_list for training,
+        Convert keypoint annotations to a heatmap of one-hot labels for training,
         as described in :paper:`Mask R-CNN`.
 
         Arguments:
@@ -61,7 +61,7 @@ class Keypoints:
 
         Returns:
             heatmaps:
-                A tensor of shape (N, K), each element is integer spatial ori_annotation_file
+                A tensor of shape (N, K), each element is integer spatial label
                 in the range [0, heatmap_size**2 - 1] for each keypoint in the input.
             valid:
                 A tensor of shape (N, K) containing whether each keypoint is in the roi or not.
@@ -130,7 +130,7 @@ def _keypoints_to_heatmap(
         heatmap_size: integer side length of square heatmap.
 
     Returns:
-        heatmaps: A tensor of shape (N, K) containing an integer spatial ori_annotation_file
+        heatmaps: A tensor of shape (N, K) containing an integer spatial label
             in the range [0, heatmap_size**2 - 1] for each keypoint in the input.
         valid: A tensor of shape (N, K) containing whether each keypoint is in
             the roi or not.
@@ -184,7 +184,7 @@ def heatmaps_to_keypoints(maps: torch.Tensor, rois: torch.Tensor) -> torch.Tenso
 
     Returns:
         Tensor of shape (#ROIs, #keypoints, 4) with the last dimension corresponding to
-        (features, y, logit, score) for each keypoint.
+        (x, y, logit, score) for each keypoint.
 
     When converting discrete pixel indices in an NxN image to a continuous keypoint coordinate,
     we maintain consistency with :meth:`Keypoints.to_heatmap` by using the conversion from
@@ -217,14 +217,14 @@ def heatmaps_to_keypoints(maps: torch.Tensor, rois: torch.Tensor) -> torch.Tenso
             maps[[i]], size=outsize, mode="bicubic", align_corners=False
         ).squeeze(
             0
-        )  # #keypoints features H features W
+        )  # #keypoints x H x W
 
         # softmax over the spatial region
         max_score, _ = roi_map.view(num_keypoints, -1).max(1)
         max_score = max_score.view(num_keypoints, 1, 1)
         tmp_full_resolution = (roi_map - max_score).exp_()
         tmp_pool_resolution = (maps[i] - max_score).exp_()
-        # Produce scores over the region H features W, but normalize with POOL_H features POOL_W,
+        # Produce scores over the region H x W, but normalize with POOL_H x POOL_W,
         # so that the scores of objects of different absolute sizes will be more comparable
         roi_map_scores = tmp_full_resolution / tmp_pool_resolution.sum((1, 2), keepdim=True)
 

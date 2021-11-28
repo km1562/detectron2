@@ -58,10 +58,10 @@ class MapDataset(data.Dataset):
                 map-style or iterable dataset. When given an iterable dataset,
                 the returned object will also be an iterable dataset.
             map_func: a callable which maps the element in dataset. map_func can
-                return None to skip the datas (e.g. in case of errors).
+                return None to skip the data (e.g. in case of errors).
                 How None is handled depends on the style of `dataset`.
                 If `dataset` is map-style, it randomly tries other elements.
-                If `dataset` is iterable, it skips the datas and tries the next.
+                If `dataset` is iterable, it skips the data and tries the next.
         """
         self._dataset = dataset
         self._map_func = PicklableWrapper(map_func)  # wrap so that a lambda will work
@@ -108,7 +108,7 @@ class MapDataset(data.Dataset):
 
 class DatasetFromList(data.Dataset):
     """
-    Wrap a list to a torch Dataset. It produces elements of the list as datas.
+    Wrap a list to a torch Dataset. It produces elements of the list as data.
     """
 
     def __init__(self, lst: list, copy: bool = True, serialize: bool = True):
@@ -119,7 +119,7 @@ class DatasetFromList(data.Dataset):
                 so that the result can be modified in place without affecting the
                 source in the list.
             serialize (bool): whether to hold memory using serialized objects, when
-                enabled, datas loader workers can use shared RAM from master
+                enabled, data loader workers can use shared RAM from master
                 process instead of making a copy.
         """
         self._lst = lst
@@ -172,10 +172,10 @@ class ToIterableDataset(data.IterableDataset):
         Args:
             dataset: an old-style dataset with ``__getitem__``
             sampler: a cheap iterable that produces indices to be applied on ``dataset``.
-            shard_sampler: whether to shard the sampler based on the current pytorch datas loader
+            shard_sampler: whether to shard the sampler based on the current pytorch data loader
                 worker id. When an IterableDataset is forked by pytorch's DataLoader into multiple
-                workers, it is responsible for sharding its datas based on worker id so that workers
-                don't produce identical datas.
+                workers, it is responsible for sharding its data based on worker id so that workers
+                don't produce identical data.
 
                 Most samplers (like our TrainingSampler) do not shard based on dataloader worker id
                 and this argument should be set to True. But certain samplers may be already
@@ -206,7 +206,7 @@ class ToIterableDataset(data.IterableDataset):
 
 class AspectRatioGroupedDataset(data.IterableDataset):
     """
-    Batch datas that have similar aspect ratio together.
+    Batch data that have similar aspect ratio together.
     In this implementation, images whose aspect ratio < (or >) 1 will
     be batched together.
     This improves training speed because the images then need less padding
@@ -221,7 +221,7 @@ class AspectRatioGroupedDataset(data.IterableDataset):
         """
         Args:
             dataset: an iterable. Each element must be a dict with keys
-                "width" and "height", which will be used to batch datas.
+                "width" and "height", which will be used to batch data.
             batch_size (int):
         """
         self.dataset = dataset

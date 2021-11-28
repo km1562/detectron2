@@ -159,7 +159,7 @@ def get_sample_inputs(args):
         first_batch = next(iter(data_loader))
         return first_batch
     else:
-        # get a sample datas
+        # get a sample data
         original_image = detection_utils.read_image(args.sample_image, format=cfg.INPUT.FORMAT)
         # Do same preprocessing as DefaultPredictor
         aug = T.ResizeShortestEdge(
@@ -214,7 +214,7 @@ if __name__ == "__main__":
     DetectionCheckpointer(torch_model).resume_or_load(cfg.MODEL.WEIGHTS)
     torch_model.eval()
 
-    # get sample datas
+    # get sample data
     sample_inputs = get_sample_inputs(args)
 
     # convert and save model

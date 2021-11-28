@@ -24,7 +24,7 @@ class TestSingleProcessRamTensorStorage(unittest.TestCase):
             "tf": SizeData(dtype="float32", shape=(112, 112)),
             "ti": SizeData(dtype="int32", shape=(4, 64, 64)),
         }
-        # generate datas which corresponds to the schema
+        # generate data which corresponds to the schema
         data_elts = []
         torch.manual_seed(23)
         for _i in range(3):
@@ -34,11 +34,11 @@ class TestSingleProcessRamTensorStorage(unittest.TestCase):
             }
             data_elts.append(data_elt)
         storage = SingleProcessRamTensorStorage(schema, io.BytesIO())
-        # write datas to the storage
+        # write data to the storage
         for i in range(3):
             record_id = storage.put(data_elts[i])
             self.assertEqual(record_id, i)
-        # read datas from the storage
+        # read data from the storage
         for i in range(3):
             record = storage.get(i)
             self.assertEqual(len(record), len(schema))
@@ -55,7 +55,7 @@ class TestSingleProcessFileTensorStorage(unittest.TestCase):
             "tf": SizeData(dtype="float32", shape=(112, 112)),
             "ti": SizeData(dtype="int32", shape=(4, 64, 64)),
         }
-        # generate datas which corresponds to the schema
+        # generate data which corresponds to the schema
         data_elts = []
         torch.manual_seed(23)
         for _i in range(3):
@@ -67,13 +67,13 @@ class TestSingleProcessFileTensorStorage(unittest.TestCase):
         # WARNING: opens the file several times! may not work on all platforms
         with tempfile.NamedTemporaryFile() as hFile:
             storage = SingleProcessFileTensorStorage(schema, hFile.name, "wb")
-            # write datas to the storage
+            # write data to the storage
             for i in range(3):
                 record_id = storage.put(data_elts[i])
                 self.assertEqual(record_id, i)
             hFile.seek(0)
             storage = SingleProcessFileTensorStorage(schema, hFile.name, "rb")
-            # read datas from the storage
+            # read data from the storage
             for i in range(3):
                 record = storage.get(i)
                 self.assertEqual(len(record), len(schema))
@@ -135,16 +135,16 @@ def ram_read_write_worker():
             "ti": torch.ones((4, 64, 64), dtype=torch.int32) * (rank + i * world_size),
         }
         data_elts.append(data_elt)
-    # write datas to the single process storage
+    # write data to the single process storage
     for i in range(rank + 1):
         record_id = storage.put(data_elts[i])
         assert record_id == i, f"Process {rank}: record ID {record_id}, expected {i}"
     comm.synchronize()
-    # gather all datas in process rank 0
+    # gather all data in process rank 0
     multi_storage = storage_gather(storage)
     if rank != 0:
         return
-    # read and check datas from the multiprocess storage
+    # read and check data from the multiprocess storage
     for j in range(world_size):
         for i in range(j):
             record = multi_storage.get(j, i)
@@ -196,16 +196,16 @@ def file_read_write_worker(rank_to_fpath):
             "ti": torch.ones((4, 64, 64), dtype=torch.int32) * (rank + i * world_size),
         }
         data_elts.append(data_elt)
-    # write datas to the single process storage
+    # write data to the single process storage
     for i in range(rank + 1):
         record_id = storage.put(data_elts[i])
         assert record_id == i, f"Process {rank}: record ID {record_id}, expected {i}"
     comm.synchronize()
-    # gather all datas in process rank 0
+    # gather all data in process rank 0
     multi_storage = storage_gather(storage)
     if rank != 0:
         return
-    # read and check datas from the multiprocess storage
+    # read and check data from the multiprocess storage
     for j in range(world_size):
         for i in range(j):
             record = multi_storage.get(j, i)

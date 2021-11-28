@@ -9,7 +9,7 @@ model.roi_heads.box_head.conv_norm = model.roi_heads.mask_head.conv_norm = "BN"
 model.roi_heads.box_head.conv_dims = [256, 256, 256, 256]
 model.roi_heads.box_head.fc_dims = [1024]
 
-dataloader = get_config("common/datas/coco.py").dataloader
+dataloader = get_config("common/data/coco.py").dataloader
 lr_multiplier = get_config("common/coco_schedule.py").lr_multiplier_3x
 optimizer = get_config("common/optim.py").SGD
 train = get_config("common/train.py").train

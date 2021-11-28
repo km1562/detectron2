@@ -2,8 +2,8 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 
 """
-Common datas processing utilities that are used in a
-typical object detection datas pipeline.
+Common data processing utilities that are used in a
+typical object detection data pipeline.
 """
 import logging
 import numpy as np
@@ -262,7 +262,7 @@ def transform_instance_annotations(
 
     It will use `transforms.apply_box` for the box, and
     `transforms.apply_coords` for segmentation polygons & keypoints.
-    If you need anything more specially designed for each datas structure,
+    If you need anything more specially designed for each data structure,
     you'll need to implement your own version of this function or the transforms.
 
     Args:
@@ -325,7 +325,7 @@ def transform_keypoint_annotations(keypoints, transforms, image_size, keypoint_h
 
     Args:
         keypoints (list[float]): Nx3 float in Detectron2's Dataset format.
-            Each point is represented by (features, y, visibility).
+            Each point is represented by (x, y, visibility).
         transforms (TransformList):
         image_size (tuple): the height, width of the transformed image
         keypoint_hflip_indices (ndarray[int]): see `create_keypoint_hflip_indices`.
@@ -356,12 +356,12 @@ def transform_keypoint_annotations(keypoints, transforms, image_size, keypoint_h
             raise ValueError("Cannot flip keypoints without providing flip indices!")
         if len(keypoints) != len(keypoint_hflip_indices):
             raise ValueError(
-                "Keypoint datas has {} points, but metadata "
+                "Keypoint data has {} points, but metadata "
                 "contains {} points!".format(len(keypoints), len(keypoint_hflip_indices))
             )
         keypoints = keypoints[np.asarray(keypoint_hflip_indices, dtype=np.int32), :]
 
-    # Maintain COCO convention that if visibility == 0 (unlabeled), then features, y = 0
+    # Maintain COCO convention that if visibility == 0 (unlabeled), then x, y = 0
     keypoints[keypoints[:, 2] == 0] = 0
     return keypoints
 

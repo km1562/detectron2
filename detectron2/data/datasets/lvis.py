@@ -138,10 +138,10 @@ def load_lvis_json(json_file, image_root, dataset_name=None, extra_annotation_ke
         for anno in anno_dict_list:
             # Check that the image_id in this annotation is the same as
             # the image_id we're looking at.
-            # This fails only when the datas parsing logic or the annotation file is buggy.
+            # This fails only when the data parsing logic or the annotation file is buggy.
             assert anno["image_id"] == image_id
             obj = {"bbox": anno["bbox"], "bbox_mode": BoxMode.XYWH_ABS}
-            # LVIS datas loader can be used to load COCO dataset categories. In this case `meta`
+            # LVIS data loader can be used to load COCO dataset categories. In this case `meta`
             # variable will have a field with COCO-specific category mapping.
             if dataset_name is not None and "thing_dataset_id_to_contiguous_id" in meta:
                 obj["category_id"] = meta["thing_dataset_id_to_contiguous_id"][anno["category_id"]]
@@ -214,7 +214,7 @@ if __name__ == "__main__":
     Test the LVIS json dataset loader.
 
     Usage:
-        python -m detectron2.datas.datasets.lvis \
+        python -m detectron2.data.datasets.lvis \
             path/to/json path/to/image_root dataset_name vis_limit
     """
     import sys
@@ -230,7 +230,7 @@ if __name__ == "__main__":
     dicts = load_lvis_json(sys.argv[1], sys.argv[2], sys.argv[3])
     logger.info("Done loading {} samples.".format(len(dicts)))
 
-    dirname = "lvis-datas-vis"
+    dirname = "lvis-data-vis"
     os.makedirs(dirname, exist_ok=True)
     for d in dicts[: int(sys.argv[4])]:
         img = np.array(Image.open(d["file_name"]))

@@ -14,7 +14,7 @@ class MaskFromDensePoseSampler:
 
     def __call__(self, instances: Instances) -> BitMasks:
         """
-        Converts predicted datas from `instances` into the GT mask datas
+        Converts predicted data from `instances` into the GT mask data
 
         Args:
             instances (Instances): predicted results, expected to have `pred_densepose` field

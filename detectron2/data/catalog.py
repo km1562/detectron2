@@ -20,7 +20,7 @@ class _DatasetCatalog(UserDict):
     format of `list[dict]`.
 
     The returned dicts should be in Detectron2 Dataset format (See DATASETS.md for details)
-    if used with the datas loader functionalities in `datas/build.py,datas/detection_transform.py`.
+    if used with the data loader functionalities in `data/build.py,data/detection_transform.py`.
 
     The purpose of having this catalog is to make it easy to choose
     different datasets, by just using the strings in the config.
@@ -82,8 +82,8 @@ DatasetCatalog = _DatasetCatalog()
 DatasetCatalog.__doc__ = (
     _DatasetCatalog.__doc__
     + """
-    .. automethod:: detectron2.datas.catalog.DatasetCatalog.register
-    .. automethod:: detectron2.datas.catalog.DatasetCatalog.get
+    .. automethod:: detectron2.data.catalog.DatasetCatalog.register
+    .. automethod:: detectron2.data.catalog.DatasetCatalog.get
 """
 )
 
@@ -95,7 +95,7 @@ class Metadata(types.SimpleNamespace):
 
     Examples:
     ::
-        # somewhere when you load the datas:
+        # somewhere when you load the data:
         MetadataCatalog.get("mydataset").thing_classes = ["person", "dog"]
 
         # somewhere when you print statistics or visualize:
@@ -231,6 +231,6 @@ MetadataCatalog = _MetadataCatalog()
 MetadataCatalog.__doc__ = (
     _MetadataCatalog.__doc__
     + """
-    .. automethod:: detectron2.datas.catalog.MetadataCatalog.get
+    .. automethod:: detectron2.data.catalog.MetadataCatalog.get
 """
 )

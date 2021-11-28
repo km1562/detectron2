@@ -42,7 +42,7 @@ def load_coco_panoptic_json(json_file, image_dir, gt_dir, meta):
     ret = []
     for ann in json_info["annotations"]:
         image_id = int(ann["image_id"])
-        # TODO: currently we assume image and ori_annotation_file has the same filename but
+        # TODO: currently we assume image and label has the same filename but
         # different extension, and images have extension ".jpg" for COCO. Need
         # to make image extension a user-provided argument if we extend this
         # function to support other COCO-like datasets.
@@ -195,7 +195,7 @@ if __name__ == "__main__":
     Test the COCO panoptic dataset loader.
 
     Usage:
-        python -m detectron2.datas.datasets.coco_panoptic \
+        python -m detectron2.data.datasets.coco_panoptic \
             path/to/image_root path/to/panoptic_root path/to/panoptic_json dataset_name 10
 
         "dataset_name" can be "coco_2017_train_panoptic", or other
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     dicts = load_coco_panoptic_json(sys.argv[3], sys.argv[1], sys.argv[2], meta.as_dict())
     logger.info("Done loading {} samples.".format(len(dicts)))
 
-    dirname = "coco-datas-vis"
+    dirname = "coco-data-vis"
     os.makedirs(dirname, exist_ok=True)
     num_imgs_to_vis = int(sys.argv[5])
     for i, d in enumerate(dicts):

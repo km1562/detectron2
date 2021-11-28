@@ -113,7 +113,7 @@ class ROIPooler(nn.Module):
         """
         Args:
             output_size (int, tuple[int] or list[int]): output size of the pooled region,
-                e.g., 14 features 14. If tuple or list is given, the length must be 2.
+                e.g., 14 x 14. If tuple or list is given, the length must be 2.
             scales (list[float]): The scale for each low-level pooling op relative to
                 the input image. For a feature map with stride s relative to the input
                 image, scale is defined as 1/s. The stride must be power of 2.
@@ -200,7 +200,7 @@ class ROIPooler(nn.Module):
         Returns:
             Tensor:
                 A tensor of shape (M, C, output_size, output_size) where M is the total number of
-                boxes aggregated over all N batch images and C is the number of channels in `features`.
+                boxes aggregated over all N batch images and C is the number of channels in `x`.
         """
         num_level_assignments = len(self.level_poolers)
 
@@ -209,13 +209,13 @@ class ROIPooler(nn.Module):
         ), "Arguments to pooler must be lists"
         assert (
             len(x) == num_level_assignments
-        ), "unequal value, num_level_assignments={}, but features is list of {} Tensors".format(
+        ), "unequal value, num_level_assignments={}, but x is list of {} Tensors".format(
             num_level_assignments, len(x)
         )
 
         assert len(box_lists) == x[0].size(
             0
-        ), "unequal value, features[0] batch dim 0 is {}, but box_list has length {}".format(
+        ), "unequal value, x[0] batch dim 0 is {}, but box_list has length {}".format(
             x[0].size(0), len(box_lists)
         )
         if len(box_lists) == 0:

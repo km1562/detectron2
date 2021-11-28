@@ -60,7 +60,7 @@ class GenericMask:
     """
     Attribute:
         polygons (list[ndarray]): list[ndarray]: polygons for this mask.
-            Each ndarray has format [features, y, features, y, ...]
+            Each ndarray has format [x, y, x, y, ...]
         mask (ndarray): a binary mask
     """
 
@@ -160,7 +160,7 @@ class _PanopticPrediction:
             # If "segments_info" is None, we assume "panoptic_img" is a
             # H*W int32 image storing the panoptic_id in the format of
             # category_id * label_divisor + instance_id. We reserve -1 for
-            # VOID ori_annotation_file.
+            # VOID label.
             label_divisor = metadata.label_divisor
             segments_info = []
             for panoptic_label in np.unique(panoptic_seg.numpy()):
@@ -203,7 +203,7 @@ class _PanopticPrediction:
             return np.zeros(self._seg.shape, dtype=np.uint8)
         assert (
             len(empty_ids) == 1
-        ), ">1 ids corresponds to no ori_annotation_file_list. This is currently not supported"
+        ), ">1 ids corresponds to no labels. This is currently not supported"
         return (self._seg != empty_ids[0]).numpy().astype(np.bool)
 
     def semantic_masks(self):
@@ -321,21 +321,21 @@ class VisImage:
 
 class Visualizer:
     """
-    Visualizer that draws datas about detection/segmentation on images.
+    Visualizer that draws data about detection/segmentation on images.
 
     It contains methods like `draw_{text,box,circle,line,binary_mask,polygon}`
     that draw primitive objects to images, as well as high-level wrappers like
     `draw_{instance_predictions,sem_seg,panoptic_seg_predictions,dataset_dict}`
-    that draw composite datas in some pre-defined style.
+    that draw composite data in some pre-defined style.
 
     Note that the exact visualization style for the high-level wrappers are subject to change.
-    Style such as color, opacity, ori_annotation_file contents, visibility of ori_annotation_file_list, or even the visibility
+    Style such as color, opacity, label contents, visibility of labels, or even the visibility
     of objects themselves (e.g. when the object is too small) may change according
     to different heuristics, as long as the results still look visually reasonable.
 
     To obtain a consistent style, you can implement custom drawing functions with the
     abovementioned primitive methods instead. If you need more customized visualization
-    styles, you can process the datas yourself following their format documented in
+    styles, you can process the data yourself following their format documented in
     tutorials (:doc:`/tutorials/models`, :doc:`/tutorials/datasets`). This class does not
     intend to satisfy everyone's preference on drawing styles.
 
@@ -423,11 +423,11 @@ class Visualizer:
 
     def draw_sem_seg(self, sem_seg, area_threshold=None, alpha=0.8):
         """
-        Draw semantic segmentation predictions/ori_annotation_file_list.
+        Draw semantic segmentation predictions/labels.
 
         Args:
             sem_seg (Tensor or ndarray): the segmentation of shape (H, W).
-                Each value is the integer ori_annotation_file of the pixel.
+                Each value is the integer label of the pixel.
             area_threshold (int): segments with less than `area_threshold` are not drawn.
             alpha (float): the larger it is, the more opaque the segmentations are.
 
@@ -528,7 +528,7 @@ class Visualizer:
         Draw annotations/segmentaions in Detectron2 Dataset format.
 
         Args:
-            dic (dict): annotation/segmentation datas of one image, in Detectron2 Dataset format.
+            dic (dict): annotation/segmentation data of one image, in Detectron2 Dataset format.
 
         Returns:
             output (VisImage): image object with visualizations.
@@ -623,7 +623,7 @@ class Visualizer:
                 * list[dict]: each dict is a COCO-style RLE.
             keypoints (Keypoint or array like): an array-like object of shape (N, K, 3),
                 where the N is the number of instances and K is the number of keypoints.
-                The last dimension corresponds to (features, y, visibility or score).
+                The last dimension corresponds to (x, y, visibility or score).
             assigned_colors (list[matplotlib.colors]): a list of colors, where each color
                 corresponds to each mask or box in the image. Refer to 'matplotlib.colors'
                 for full list of formats that the colors are accepted in.
@@ -781,7 +781,7 @@ class Visualizer:
 
         Args:
             keypoints (Tensor): a tensor of shape (K, 3), where K is the number of keypoints
-                and the last dimension corresponds to (features, y, probability).
+                and the last dimension corresponds to (x, y, probability).
 
         Returns:
             output (VisImage): image object with visualizations.
@@ -847,8 +847,8 @@ class Visualizer:
     ):
         """
         Args:
-            text (str): class ori_annotation_file
-            position (tuple): a tuple of the features and y coordinates to place text on image.
+            text (str): class label
+            position (tuple): a tuple of the x and y coordinates to place text on image.
             font_size (int, optional): font of the text. If not provided, a font size
                 proportional to the image width is calculated and used.
             color: color of the text. Refer to `matplotlib.colors` for full list
@@ -920,7 +920,7 @@ class Visualizer:
         self, rotated_box, alpha=0.5, edge_color="g", line_style="-", label=None
     ):
         """
-        Draw a rotated box with ori_annotation_file on its top-left corner.
+        Draw a rotated box with label on its top-left corner.
 
         Args:
             rotated_box (tuple): a tuple containing (cnt_x, cnt_y, w, h, angle),
@@ -931,7 +931,7 @@ class Visualizer:
             edge_color: color of the outline of the box. Refer to `matplotlib.colors`
                 for full list of formats that are accepted.
             line_style (string): the string to use to create the outline of the boxes.
-            label (string): ori_annotation_file for rotated box. It will not be rendered when set to None.
+            label (string): label for rotated box. It will not be rendered when set to None.
 
         Returns:
             output (VisImage): image object with box drawn.
@@ -947,7 +947,7 @@ class Visualizer:
         c = math.cos(theta)
         s = math.sin(theta)
         rect = [(-w / 2, h / 2), (-w / 2, -h / 2), (w / 2, -h / 2), (w / 2, h / 2)]
-        # features: left->right ; y: top->down
+        # x: left->right ; y: top->down
         rotated_rect = [(s * yy + c * xx + cnt_x, c * yy - s * xx + cnt_y) for (xx, yy) in rect]
         for k in range(4):
             j = (k + 1) % 4
@@ -974,7 +974,7 @@ class Visualizer:
     def draw_circle(self, circle_coord, color, radius=3):
         """
         Args:
-            circle_coord (list(int) or tuple(int)): contains the features and y coordinates
+            circle_coord (list(int) or tuple(int)): contains the x and y coordinates
                 of the center of the circle.
             color: color of the polygon. Refer to `matplotlib.colors` for a full list of
                 formats that are accepted.
@@ -992,10 +992,10 @@ class Visualizer:
     def draw_line(self, x_data, y_data, color, linestyle="-", linewidth=None):
         """
         Args:
-            x_data (list[int]): a list containing features values of all the points being drawn.
-                Length of list should match the length of top_y_data.
+            x_data (list[int]): a list containing x values of all the points being drawn.
+                Length of list should match the length of y_data.
             y_data (list[int]): a list containing y values of all the points being drawn.
-                Length of list should match the length of top_x_data.
+                Length of list should match the length of x_data.
             color: color of the line. Refer to `matplotlib.colors` for a full list of
                 formats that are accepted.
             linestyle: style of the line. Refer to `matplotlib.lines.Line2D`

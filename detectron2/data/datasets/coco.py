@@ -161,7 +161,7 @@ Category ids in annotations are not in [1, #categories]! We'll apply a mapping f
         for anno in anno_dict_list:
             # Check that the image_id in this annotation is the same as
             # the image_id we're looking at.
-            # This fails only when the datas parsing logic or the annotation file is buggy.
+            # This fails only when the data parsing logic or the annotation file is buggy.
 
             # The original COCO valminusminival2014 & minival2014 annotation files
             # actually contains bugs that, together with certain ways of using COCO API,
@@ -238,7 +238,7 @@ def load_sem_seg(gt_root, image_root, gt_ext="png", image_ext="jpg"):
     Args:
         gt_root (str): full path to ground truth semantic segmentation files. Semantic segmentation
             annotations are stored as images with integer values in pixels that represent
-            corresponding semantic ori_annotation_file_list.
+            corresponding semantic labels.
         image_root (str): the directory where the input images are.
         gt_ext (str): file extension for ground truth annotations.
         image_ext (str): file extension for input images.
@@ -311,7 +311,7 @@ def convert_to_coco_dict(dataset_name):
     Generic dataset description can be found here:
     https://detectron2.readthedocs.io/tutorials/datasets.html#register-a-dataset
 
-    COCO datas format description can be found here:
+    COCO data format description can be found here:
     http://cocodataset.org/#format-data
 
     Args:
@@ -456,7 +456,7 @@ def convert_to_coco_json(dataset_name, output_file, allow_cached=True):
     """
 
     # TODO: The dataset or the conversion script *may* change,
-    # a checksum would be useful for validating the cached datas
+    # a checksum would be useful for validating the cached data
 
     PathManager.mkdirs(os.path.dirname(output_file))
     with file_lock(output_file):
@@ -511,7 +511,7 @@ if __name__ == "__main__":
     Test the COCO json dataset loader.
 
     Usage:
-        python -m detectron2.datas.datasets.coco \
+        python -m detectron2.data.datasets.coco \
             path/to/json path/to/image_root dataset_name
 
         "dataset_name" can be "coco_2014_minival_100", or other
@@ -529,7 +529,7 @@ if __name__ == "__main__":
     dicts = load_coco_json(sys.argv[1], sys.argv[2], sys.argv[3])
     logger.info("Done loading {} samples.".format(len(dicts)))
 
-    dirname = "coco-datas-vis"
+    dirname = "coco-data-vis"
     os.makedirs(dirname, exist_ok=True)
     for d in dicts:
         img = np.array(Image.open(d["file_name"]))

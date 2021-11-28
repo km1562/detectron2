@@ -221,7 +221,7 @@ class TestRotatedBoxesStructure(unittest.TestCase):
             normalized_boxes.normalize_angles()
             self.assertTrue(torch.all(normalized_boxes.tensor[:, 4] >= -180))
             self.assertTrue(torch.all(normalized_boxes.tensor[:, 4] < 180))
-            # features, y, w, h should not change
+            # x, y, w, h should not change
             self.assertTrue(torch.allclose(boxes_5d[:, :4], normalized_boxes.tensor[:, :4]))
             # the cos/sin values of the angles should stay the same
 

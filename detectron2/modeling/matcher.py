@@ -18,7 +18,7 @@ class Matcher(object):
 
     The matcher returns (a) a vector of length N containing the index of the
     ground-truth element m in [0, M) that matches to prediction n in [0, N).
-    (b) a vector of length N containing the ori_annotation_file_list for each prediction.
+    (b) a vector of length N containing the labels for each prediction.
     """
 
     def __init__(
@@ -28,8 +28,8 @@ class Matcher(object):
         Args:
             thresholds (list): a list of thresholds used to stratify predictions
                 into levels.
-            labels (list): a list of values to ori_annotation_file predictions belonging at
-                each level. A ori_annotation_file can be one of {-1, 0, 1} signifying
+            labels (list): a list of values to label predictions belonging at
+                each level. A label can be one of {-1, 0, 1} signifying
                 {ignore, negative class, positive class}, respectively.
             allow_low_quality_matches (bool): if True, produce additional matches
                 for predictions with maximum match quality lower than high_threshold.
@@ -37,7 +37,7 @@ class Matcher(object):
 
             For example,
                 thresholds = [0.3, 0.5]
-                ori_annotation_file_list = [0, -1, 1]
+                labels = [0, -1, 1]
                 All predictions with iou < 0.3 will be marked with 0 and
                 thus will be considered as false positives while training.
                 All predictions with 0.3 <= iou < 0.5 will be marked with -1 and
@@ -77,9 +77,9 @@ class Matcher(object):
             default_matches = match_quality_matrix.new_full(
                 (match_quality_matrix.size(1),), 0, dtype=torch.int64
             )
-            # When no gt boxes exist, we define IOU = 0 and therefore set ori_annotation_file_list
-            # to `self.ori_annotation_file_list[0]`, which usually defaults to background class 0
-            # To choose to ignore instead, can make ori_annotation_file_list=[-1,0,-1,1] + set appropriate thresholds
+            # When no gt boxes exist, we define IOU = 0 and therefore set labels
+            # to `self.labels[0]`, which usually defaults to background class 0
+            # To choose to ignore instead, can make labels=[-1,0,-1,1] + set appropriate thresholds
             default_match_labels = match_quality_matrix.new_full(
                 (match_quality_matrix.size(1),), self.labels[0], dtype=torch.int8
             )
@@ -87,7 +87,7 @@ class Matcher(object):
 
         assert torch.all(match_quality_matrix >= 0)
 
-        # match_quality_matrix is M (gt) features N (predicted)
+        # match_quality_matrix is M (gt) x N (predicted)
         # Max over gt elements (dim 0) to find best gt candidate for each prediction
         matched_vals, matches = match_quality_matrix.max(dim=0)
 

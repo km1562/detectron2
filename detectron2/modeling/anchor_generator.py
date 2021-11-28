@@ -161,7 +161,7 @@ class DefaultAnchorGenerator(nn.Module):
     def _grid_anchors(self, grid_sizes: List[List[int]]):
         """
         Returns:
-            list[Tensor]: #featuremap tensors, each is (#locations features #cell_anchors) features 4
+            list[Tensor]: #featuremap tensors, each is (#locations x #cell_anchors) x 4
         """
         anchors = []
         # buffers() not supported by torchscript. use named_buffers() instead
@@ -219,7 +219,7 @@ class DefaultAnchorGenerator(nn.Module):
         Returns:
             list[Boxes]: a list of Boxes containing all the anchors for each feature map
                 (i.e. the cell anchors repeated over all locations in the feature map).
-                The number of anchors of each feature map is Hi features Wi features num_cell_anchors,
+                The number of anchors of each feature map is Hi x Wi x num_cell_anchors,
                 where Hi, Wi are resolution of the feature map divided by anchor stride.
         """
         grid_sizes = [feature_map.shape[-2:] for feature_map in features]
@@ -366,7 +366,7 @@ class RotatedAnchorGenerator(nn.Module):
         Returns:
             list[RotatedBoxes]: a list of Boxes containing all the anchors for each feature map
                 (i.e. the cell anchors repeated over all locations in the feature map).
-                The number of anchors of each feature map is Hi features Wi features num_cell_anchors,
+                The number of anchors of each feature map is Hi x Wi x num_cell_anchors,
                 where Hi, Wi are resolution of the feature map divided by anchor stride.
         """
         grid_sizes = [feature_map.shape[-2:] for feature_map in features]

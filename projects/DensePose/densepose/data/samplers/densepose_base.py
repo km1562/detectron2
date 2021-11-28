@@ -13,7 +13,7 @@ from densepose.structures import DensePoseDataRelative, DensePoseList
 
 class DensePoseBaseSampler:
     """
-    Base DensePose sampler to produce DensePose datas from DensePose predictions.
+    Base DensePose sampler to produce DensePose data from DensePose predictions.
     Samples for each class are drawn according to some distribution over all pixels estimated
     to belong to that class.
     """
@@ -31,7 +31,7 @@ class DensePoseBaseSampler:
     def __call__(self, instances: Instances) -> DensePoseList:
         """
         Convert DensePose predictions (an instance of `DensePoseChartPredictorOutput`)
-        into DensePose annotations datas (an instance of `DensePoseList`)
+        into DensePose annotations data (an instance of `DensePoseList`)
         """
         boxes_xyxy_abs = instances.pred_boxes.tensor.clone().cpu()
         boxes_xywh_abs = BoxMode.convert(boxes_xyxy_abs, BoxMode.XYXY_ABS, BoxMode.XYWH_ABS)
@@ -77,7 +77,7 @@ class DensePoseBaseSampler:
             sampled_values = values[:, index_sample]
             sampled_y = indices[1][index_sample] + 0.5
             sampled_x = indices[2][index_sample] + 0.5
-            # prepare / normalize datas
+            # prepare / normalize data
             x = (sampled_x / w * 256.0).cpu().tolist()
             y = (sampled_y / h * 256.0).cpu().tolist()
             u = sampled_values[0].clamp(0, 1).cpu().tolist()
@@ -93,7 +93,7 @@ class DensePoseBaseSampler:
 
     def _produce_index_sample(self, values: torch.Tensor, count: int):
         """
-        Abstract method to produce a sample of indices to select datas
+        Abstract method to produce a sample of indices to select data
         To be implemented in descendants
 
         Args:
@@ -110,18 +110,18 @@ class DensePoseBaseSampler:
 
     def _produce_labels_and_results(self, instance: Instances) -> Tuple[torch.Tensor, torch.Tensor]:
         """
-        Method to get ori_annotation_file_list and DensePose results from an instance
+        Method to get labels and DensePose results from an instance
 
         Args:
             instance (Instances): an instance of `DensePoseChartPredictorOutput`
 
         Return:
-            ori_annotation_file_list (torch.Tensor): shape [H, W], DensePose segmentation ori_annotation_file_list
+            labels (torch.Tensor): shape [H, W], DensePose segmentation labels
             dp_result (torch.Tensor): shape [2, H, W], stacked DensePose results u and v
         """
         converter = ToChartResultConverter
         chart_result = converter.convert(instance.pred_densepose, instance.pred_boxes)
-        labels, dp_result = chart_result.ori_annotation_file_list.cpu(), chart_result.uv.cpu()
+        labels, dp_result = chart_result.labels.cpu(), chart_result.uv.cpu()
         return labels, dp_result
 
     def _resample_mask(self, output: Any) -> torch.Tensor:

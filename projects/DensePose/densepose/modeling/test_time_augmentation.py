@@ -41,7 +41,7 @@ class DensePoseGeneralizedRCNNWithTTA(GeneralizedRCNNWithTTA):
         Args:
             cfg (CfgNode):
             model (GeneralizedRCNN): a GeneralizedRCNN to apply TTA on.
-            transform_data (DensePoseTransformData): contains symmetry ori_annotation_file
+            transform_data (DensePoseTransformData): contains symmetry label
                 transforms used for horizontal flip
             tta_mapper (callable): takes a dataset dict and returns a list of
                 augmented versions of the dataset dict. Defaults to

@@ -72,11 +72,11 @@ class TestMapDataset(unittest.TestCase):
         self.assertEqual(ds[0], 2)
 
 
-@unittest.skipIf(os.environ.get("CI"), "Skipped OSS testing due to COCO datas requirement.")
+@unittest.skipIf(os.environ.get("CI"), "Skipped OSS testing due to COCO data requirement.")
 class TestDataLoader(unittest.TestCase):
     def _get_kwargs(self):
         # get kwargs of build_detection_train_loader
-        cfg = model_zoo.get_config("common/datas/coco.py").dataloader.train
+        cfg = model_zoo.get_config("common/data/coco.py").dataloader.train
         cfg.dataset.names = "coco_2017_val_100"
         cfg.pop("_target_")
         kwargs = {k: instantiate(v) for k, v in cfg.items()}

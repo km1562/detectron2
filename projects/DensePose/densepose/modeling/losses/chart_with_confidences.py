@@ -34,7 +34,7 @@ class DensePoseChartWithConfidenceLoss(DensePoseChartLoss):
         """
         Overrides fake losses for fine segmentation and U/V coordinates to
         include computation graphs for additional confidence parameters.
-        These are used when no suitable ground truth datas was found in a batch.
+        These are used when no suitable ground truth data was found in a batch.
         The loss has a value 0 and is primarily used to construct the computation graph,
         so that `DistributedDataParallel` has similar graphs on all GPUs and can
         perform reduction properly.
@@ -43,8 +43,8 @@ class DensePoseChartWithConfidenceLoss(DensePoseChartLoss):
             densepose_predictor_outputs: DensePose predictor outputs, an object
                 of a dataclass that is assumed to have the following attributes:
              * fine_segm - fine segmentation estimates, tensor of shape [N, C, S, S]
-             * u - U coordinate estimates per fine ori_annotation_file_list, tensor of shape [N, C, S, S]
-             * v - V coordinate estimates per fine ori_annotation_file_list, tensor of shape [N, C, S, S]
+             * u - U coordinate estimates per fine labels, tensor of shape [N, C, S, S]
+             * v - V coordinate estimates per fine labels, tensor of shape [N, C, S, S]
         Return:
             dict: str -> tensor: dict of losses with the following entries:
              * `loss_densepose_U`: has value 0

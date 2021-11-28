@@ -52,9 +52,9 @@ class ScoreBasedFilter:
 class InferenceBasedLoader:
     """
     Data loader based on results inferred by a model. Consists of:
-     - a datas loader that provides batches of images
+     - a data loader that provides batches of images
      - a model that is used to infer the results
-     - a datas sampler that converts inferred results to annotations
+     - a data sampler that converts inferred results to annotations
     """
 
     def __init__(
@@ -73,17 +73,17 @@ class InferenceBasedLoader:
         Constructor
 
         Args:
-          model (torch.nn.Module): model used to produce datas
+          model (torch.nn.Module): model used to produce data
           data_loader (Iterable[List[Dict[str, Any]]]): iterable that provides
             dictionaries with "images" and "categories" fields to perform inference on
           data_sampler (Callable: ModelOutput -> SampledData): functor
-              that produces annotation datas from inference results;
+              that produces annotation data from inference results;
               (optional, default: None)
           data_filter (Callable: ModelOutput -> ModelOutput): filter
               that selects model outputs for further processing
               (optional, default: None)
           shuffle (bool): if True, the input images get shuffled
-          batch_size (int): batch size for the produced annotation datas
+          batch_size (int): batch size for the produced annotation data
           inference_batch_size (int): batch size for input images
           drop_last (bool): if True, drop the last batch if it is undersized
           category_to_class_mapping (dict): category to class mapping
@@ -122,14 +122,14 @@ class InferenceBasedLoader:
         self, images_and_categories: List[Tuple[torch.Tensor, Optional[str]]]
     ) -> Iterator[List[SampledData]]:
         """
-        Produce batches of datas from images
+        Produce batches of data from images
 
         Args:
           images_and_categories (List[Tuple[torch.Tensor, Optional[str]]]):
             list of images and corresponding categories to process
 
         Returns:
-          Iterator over batches of datas sampled from model outputs
+          Iterator over batches of data sampled from model outputs
         """
         data_batches: List[SampledData] = []
         category_to_class_mapping = self.category_to_class_mapping

@@ -33,7 +33,7 @@ Naming convention:
     pred_class_logits: predicted class scores in [-inf, +inf]; use
         softmax(pred_class_logits) to estimate P(class).
 
-    gt_classes: ground-truth classification ori_annotation_file_list in [0, K], where [0, K) represent
+    gt_classes: ground-truth classification labels in [0, K], where [0, K) represent
         foreground object classes and K represents the background class.
 
     pred_proposal_deltas: predicted box2box transform deltas for transforming proposals
@@ -91,7 +91,7 @@ def _log_classification_stats(pred_logits, gt_classes, prefix="fast_rcnn"):
 
     Args:
         pred_logits: Rx(K+1) logits. The last column is for background class.
-        gt_classes: R ori_annotation_file_list
+        gt_classes: R labels
     """
     num_instances = gt_classes.numel()
     if num_instances == 0:
@@ -144,12 +144,12 @@ def fast_rcnn_inference_single_image(
     # Convert to Boxes to use the `clip` function ...
     boxes = Boxes(boxes.reshape(-1, 4))
     boxes.clip(image_shape)
-    boxes = boxes.tensor.view(-1, num_bbox_reg_classes, 4)  # R features C features 4
+    boxes = boxes.tensor.view(-1, num_bbox_reg_classes, 4)  # R x C x 4
 
     # 1. Filter results based on detection scores. It can make NMS more efficient
     #    by filtering out low-confidence detections.
-    filter_mask = scores > score_thresh  # R features K
-    # R' features 2. First column contains indices of the R predictions;
+    filter_mask = scores > score_thresh  # R x K
+    # R' x 2. First column contains indices of the R predictions;
     # Second column contains indices of classes.
     filter_inds = filter_mask.nonzero()
     if num_bbox_reg_classes == 1:
@@ -321,7 +321,7 @@ class FastRCNNOutputLayers(nn.Module):
         """
         Args:
             All boxes are tensors with the same shape Rx(4 or 5).
-            gt_classes is a long tensor of shape R, the gt class ori_annotation_file of each proposal.
+            gt_classes is a long tensor of shape R, the gt class label of each proposal.
             R shall be the number of proposals.
         """
         box_dim = proposal_boxes.shape[1]  # 4 or 5

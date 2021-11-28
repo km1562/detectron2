@@ -23,16 +23,16 @@ __all__ = ["TensorMask"]
 def permute_all_cls_and_box_to_N_HWA_K_and_concat(pred_logits, pred_anchor_deltas, num_classes=80):
     """
     Rearrange the tensor layout from the network output, i.e.:
-    list[Tensor]: #lvl tensors of shape (N, A features K, Hi, Wi)
+    list[Tensor]: #lvl tensors of shape (N, A x K, Hi, Wi)
     to per-image predictions, i.e.:
-    Tensor: of shape (N features sum(Hi features Wi features A), K)
+    Tensor: of shape (N x sum(Hi x Wi x A), K)
     """
     # for each feature level, permute the outputs to make them be in the
-    # same format as the ori_annotation_file_list.
+    # same format as the labels.
     pred_logits_flattened = [permute_to_N_HWA_K(x, num_classes) for x in pred_logits]
     pred_anchor_deltas_flattened = [permute_to_N_HWA_K(x, 4) for x in pred_anchor_deltas]
     # concatenate on the first dimension (representing the feature levels), to
-    # take into account the way the ori_annotation_file_list were generated (with all feature maps
+    # take into account the way the labels were generated (with all feature maps
     # being concatenated as well)
     pred_logits = cat(pred_logits_flattened, dim=1).view(-1, num_classes)
     pred_anchor_deltas = cat(pred_anchor_deltas_flattened, dim=1).view(-1, 4)
@@ -60,11 +60,11 @@ def _assignment_rule(
         unit_lengths (Tensor): Contains the unit lengths of M anchor boxes.
         min_anchor_size (float): Minimum size of the anchor, in pixels
         scale_thresh (float): The `scale` threshold: the maximum size of the anchor
-                              should not be greater than scale_thresh features max(h, w) of
+                              should not be greater than scale_thresh x max(h, w) of
                               the ground truth box.
         spatial_thresh (float): The `spatial` threshold: the l2 distance between the
                               center of the anchor and the ground truth box should not
-                              be greater than spatial_thresh features u where u is the unit length.
+                              be greater than spatial_thresh x u where u is the unit length.
 
     Returns:
         matches (Tensor[int64]): a vector of length M, where matches[i] is a matched
@@ -114,7 +114,7 @@ def _assignment_rule(
 
     assign_matrix = (contain_matrix & scale_matrix & spatial_matrix).int()
 
-    # assign_matrix is N (gt) features M (predicted)
+    # assign_matrix is N (gt) x M (predicted)
     # Max over gt elements (dim 0) to find best gt candidate for each prediction
     matched_vals, matches = assign_matrix.max(dim=0)
     match_labels = matches.new_full(matches.size(), 1, dtype=torch.int8)
@@ -135,7 +135,7 @@ def _assignment_rule(
 # TODO make the paste_mask function in d2 core support mask list
 def _paste_mask_lists_in_image(masks, boxes, image_shape, threshold=0.5):
     """
-    Paste a list of masks that are of various resolutions (e.g., 28 features 28) into an image.
+    Paste a list of masks that are of various resolutions (e.g., 28 x 28) into an image.
     The location, height, and width for pasting each mask is determined by their
     corresponding bounding boxes in boxes.
 
@@ -384,7 +384,7 @@ class TensorMask(nn.Module):
         anchors, unit_lengths, indexes = self.anchor_generator(features)
 
         if self.training:
-            # get ground truths for class ori_annotation_file_list and box targets, it will ori_annotation_file each anchor
+            # get ground truths for class labels and box targets, it will label each anchor
             gt_class_info, gt_delta_info, gt_mask_info, num_fg = self.get_ground_truth(
                 anchors, unit_lengths, indexes, gt_instances
             )
@@ -484,7 +484,7 @@ class TensorMask(nn.Module):
 
                         cur_pred_masks = pred_masks[lvl][anc][
                             cur_gt_mask_inds[:, 0],  # N
-                            :,  # V features U
+                            :,  # V x U
                             cur_gt_mask_inds[:, 1],  # H
                             cur_gt_mask_inds[:, 2],  # W
                         ]
@@ -520,7 +520,7 @@ class TensorMask(nn.Module):
         Returns:
             gt_class_info (Tensor, Tensor): A pair of two tensors for classification.
                 The first one is an integer tensor of shape (R, #classes) storing ground-truth
-                ori_annotation_file_list for each anchor. R is the total number of anchors in the batch.
+                labels for each anchor. R is the total number of anchors in the batch.
                 The second one is an integer tensor of shape (R,), to indicate which
                 anchors are valid for loss computation, which anchors are not.
             gt_delta_info (Tensor, Tensor): A pair of two tensors for boxes.
@@ -570,9 +570,9 @@ class TensorMask(nn.Module):
                 num_fg += len(fg_anchors)
                 # Find the ground truths for foreground instances
                 gt_fg_matched_inds = gt_matched_inds[fg_inds]
-                # Assign ori_annotation_file_list for foreground instances
+                # Assign labels for foreground instances
                 gt_classes_i[fg_inds] = targets_im.gt_classes[gt_fg_matched_inds]
-                # Anchors with ori_annotation_file -1 are ignored, others are left as negative
+                # Anchors with label -1 are ignored, others are left as negative
                 gt_classes_i[anchor_labels == -1] = -1
 
                 # Boxes

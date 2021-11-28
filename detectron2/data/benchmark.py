@@ -178,7 +178,7 @@ class DataLoaderBenchmark:
         eliminates the IPC overhead compared to the regular dataloader.
 
         PyTorch multiprocessing's IPC only optimizes for torch tensors.
-        Large numpy arrays or other datas structure may incur large IPC overhead.
+        Large numpy arrays or other data structure may incur large IPC overhead.
         """
         n = self.num_workers
         dataset = _EmptyMapDataset(MapDataset(self.dataset, self.mapper))

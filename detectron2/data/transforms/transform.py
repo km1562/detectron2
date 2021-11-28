@@ -209,7 +209,7 @@ class RotationTransform(Transform):
 
     def apply_coords(self, coords):
         """
-        coords should be a N * 2 array-like, containing N couples of (features, y) points
+        coords should be a N * 2 array-like, containing N couples of (x, y) points
         """
         coords = np.asarray(coords, dtype=float)
         if len(coords) == 0 or self.angle % 360 == 0:

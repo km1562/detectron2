@@ -21,7 +21,7 @@ class PointSupDatasetMapper:
     The callable currently does the following:
     1. Read the image from "file_name"
     2. Applies transforms to the image and annotations
-    3. Prepare datas and annotations to Tensor and :class:`Instances`
+    3. Prepare data and annotations to Tensor and :class:`Instances`
     """
 
     @configurable
@@ -31,7 +31,7 @@ class PointSupDatasetMapper:
         *,
         augmentations: List[Union[T.Augmentation, T.Transform]],
         image_format: str,
-        # Extra datas augmentation for point supervision
+        # Extra data augmentation for point supervision
         sample_points: int = 0,
     ):
         """
@@ -86,7 +86,7 @@ class PointSupDatasetMapper:
 
         image_shape = image.shape[:2]  # h, w
         # Pytorch's dataloader is efficient on torch.Tensor due to shared-memory,
-        # but not efficient on large generic datas structures due to the use of pickle & mp.Queue.
+        # but not efficient on large generic data structures due to the use of pickle & mp.Queue.
         # Therefore it's important to use torch.Tensor.
         dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
 

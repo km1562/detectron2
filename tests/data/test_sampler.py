@@ -56,7 +56,7 @@ class TestSamplerDeterministic(unittest.TestCase):
             # reset seed should not affect behavior of TrainingSampler
         )
         output = list(itertools.islice(data_loader, 100))
-        # multiple workers should not lead to duplicate or different datas
+        # multiple workers should not lead to duplicate or different data
         self.assertEqual(output, gt_output)
 
     def test_training_sampler_seed(self):

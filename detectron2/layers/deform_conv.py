@@ -154,7 +154,7 @@ class _DeformConv(Function):
         if not all(map(lambda s: s > 0, output_size)):
             raise ValueError(
                 "convolution input is too small (output would be {})".format(
-                    "features".join(map(str, output_size))
+                    "x".join(map(str, output_size))
                 )
             )
         return output_size

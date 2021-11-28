@@ -77,20 +77,20 @@ If arguments are unknown, reimplement `__call__` instead. \
 class Augmentation:
     """
     Augmentation defines (often random) policies/strategies to generate :class:`Transform`
-    from datas. It is often used for pre-processing of input datas.
+    from data. It is often used for pre-processing of input data.
 
     A "policy" that generates a :class:`Transform` may, in the most general case,
-    need arbitrary information from input datas in order to determine what transforms
+    need arbitrary information from input data in order to determine what transforms
     to apply. Therefore, each :class:`Augmentation` instance defines the arguments
     needed by its :meth:`get_transform` method. When called with the positional arguments,
     the :meth:`get_transform` method executes the policy.
 
     Note that :class:`Augmentation` defines the policies to create a :class:`Transform`,
-    but not how to execute the actual transform operations to those datas.
+    but not how to execute the actual transform operations to those data.
     Its :meth:`__call__` method will use :meth:`AugInput.transform` to execute the transform.
 
     The returned `Transform` object is meant to describe deterministic transformation, which means
-    it can be re-applied on associated datas, e.g. the geometry of an image and its segmentation
+    it can be re-applied on associated data, e.g. the geometry of an image and its segmentation
     masks need to be transformed together.
     (If such re-application is not needed, then determinism is not a crucial requirement.)
     """
@@ -111,7 +111,7 @@ class Augmentation:
 
     def get_transform(self, *args) -> Transform:
         """
-        Execute the policy based on input datas, and decide what transform to apply to inputs.
+        Execute the policy based on input data, and decide what transform to apply to inputs.
 
         Args:
             args: Any fixed-length positional arguments. By default, the name of the arguments
@@ -132,13 +132,13 @@ class Augmentation:
         Notes:
             Users can freely use arbitrary new argument names in custom
             :meth:`get_transform` method, as long as they are available in the
-            input datas. In detectron2 we use the following convention:
+            input data. In detectron2 we use the following convention:
 
             * image: (H,W) or (H,W,C) ndarray of type uint8 in range [0, 255], or
               floating point in range [0, 1] or [0, 255].
             * boxes: (N,4) ndarray of float32. It represents the instance bounding boxes
               of N instances. Each is in XYXY format in unit of absolute coordinates.
-            * sem_seg: (H,W) ndarray of type uint8. Each element is an integer ori_annotation_file of pixel.
+            * sem_seg: (H,W) ndarray of type uint8. Each element is an integer label of pixel.
 
             We do not specify convention for other types and do not include builtin
             :class:`Augmentation` that uses other types in detectron2.
@@ -281,7 +281,7 @@ class AugInput:
     Most augmentation policies do not need attributes beyond these three.
 
     After applying augmentations to these attributes (using :meth:`AugInput.transform`),
-    the returned transforms can then be used to transform other datas structures that users have.
+    the returned transforms can then be used to transform other data structures that users have.
 
     Examples:
     ::
@@ -291,19 +291,19 @@ class AugInput:
         transformed_boxes = input.boxes
         transformed_other_data = tfms.apply_other(other_data)
 
-    An extended project that works with new datas types may implement augmentation policies
+    An extended project that works with new data types may implement augmentation policies
     that need other inputs. An algorithm may need to transform inputs in a way different
     from the standard approach defined in this class. In those rare situations, users can
     implement a class similar to this class, that satify the following condition:
 
-    * The input must provide access to these datas in the form of attribute access
+    * The input must provide access to these data in the form of attribute access
       (``getattr``).  For example, if an :class:`Augmentation` to be applied needs "image"
       and "sem_seg" arguments, its input must have the attribute "image" and "sem_seg".
     * The input must have a ``transform(tfm: Transform) -> None`` method which
       in-place transforms all its attributes.
     """
 
-    # TODO maybe should support more builtin datas types here
+    # TODO maybe should support more builtin data types here
     def __init__(
         self,
         image: np.ndarray,
@@ -318,7 +318,7 @@ class AugInput:
                 to users.
             boxes (ndarray or None): Nx4 float32 boxes in XYXY_ABS mode
             sem_seg (ndarray or None): HxW uint8 semantic segmentation mask. Each element
-                is an integer ori_annotation_file of pixel.
+                is an integer label of pixel.
         """
         _check_img_dtype(image)
         self.image = image
@@ -330,7 +330,7 @@ class AugInput:
         In-place transform all attributes of this class.
 
         By "in-place", it means after calling this method, accessing an attribute such
-        as ``self.image`` will return transformed datas.
+        as ``self.image`` will return transformed data.
         """
         self.image = tfm.apply_image(self.image)
         if self.boxes is not None:

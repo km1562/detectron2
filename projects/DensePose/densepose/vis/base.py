@@ -10,7 +10,7 @@ Boxes = torch.Tensor
 
 class MatrixVisualizer(object):
     """
-    Base visualizer for matrix datas
+    Base visualizer for matrix data
     """
 
     def __init__(

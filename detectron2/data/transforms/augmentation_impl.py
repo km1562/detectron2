@@ -183,7 +183,7 @@ class ResizeScale(Augmentation):
     Takes target size as input and randomly scales the given target size between `min_scale`
     and `max_scale`. It then scales the input image such that it fits inside the scaled target
     box, keeping the aspect ratio constant.
-    This implements the resize part of the Google's 'resize_and_crop' datas augmentation:
+    This implements the resize part of the Google's 'resize_and_crop' data augmentation:
     https://github.com/tensorflow/tpu/blob/master/models/official/detection/utils/input_utils.py#L127
     """
 
@@ -456,8 +456,8 @@ class RandomExtent(Augmentation):
         Args:
             output_size (h, w): Dimensions of output image
             scale_range (l, h): Range of input-to-output size scaling factor
-            shift_range (features, y): Range of shifts of the cropped subrect. The rect
-                is shifted by [w / 2 * Uniform(-features, features), h / 2 * Uniform(-y, y)],
+            shift_range (x, y): Range of shifts of the cropped subrect. The rect
+                is shifted by [w / 2 * Uniform(-x, x), h / 2 * Uniform(-y, y)],
                 where (w, h) is the (width, height) of the input image. Set each
                 component to zero to crop at the image's center.
         """

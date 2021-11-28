@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 def permute_to_N_HWA_K(tensor, K: int):
     """
-    Transpose/reshape a tensor from (N, (Ai features K), H, W) to (N, (HxWxAi), K)
+    Transpose/reshape a tensor from (N, (Ai x K), H, W) to (N, (HxWxAi), K)
     """
     assert tensor.dim() == 4, tensor.shape
     N, _, H, W = tensor.shape
@@ -81,8 +81,8 @@ class RetinaNet(nn.Module):
                 list of features. Usually an instance of :class:`AnchorGenerator`
             box2box_transform (Box2BoxTransform): defines the transform from anchors boxes to
                 instance boxes
-            anchor_matcher (Matcher): ori_annotation_file the anchors by matching them with ground truth.
-            num_classes (int): number of classes. Used to ori_annotation_file background proposals.
+            anchor_matcher (Matcher): label the anchors by matching them with ground truth.
+            num_classes (int): number of classes. Used to label background proposals.
 
             # Loss parameters:
             focal_loss_alpha (float): focal_loss_alpha
@@ -295,7 +295,7 @@ class RetinaNet(nn.Module):
             anchors (list[Boxes]): a list of #feature level Boxes
             gt_labels, gt_boxes: see output of :meth:`RetinaNet.label_anchors`.
                 Their shapes are (N, R) and (N, R, 4), respectively, where R is
-                the total number of anchors across levels, i.e. sum(Hi features Wi features Ai)
+                the total number of anchors across levels, i.e. sum(Hi x Wi x Ai)
             pred_logits, pred_anchor_deltas: both are list[Tensor]. Each element in the
                 list corresponds to one level and has shape (N, Hi * Wi * Ai, K or 4).
                 Where K is the number of classes used in `pred_logits`.
@@ -355,7 +355,7 @@ class RetinaNet(nn.Module):
                 for the i-th input image.
 
         Returns:
-            list[Tensor]: List of #img tensors. i-th element is a vector of ori_annotation_file_list whose length is
+            list[Tensor]: List of #img tensors. i-th element is a vector of labels whose length is
             the total number of anchors across all feature maps (sum(Hi * Wi * A)).
             Label values are in {-1, 0, ..., K}, with -1 means ignore, and K means background.
 
@@ -376,9 +376,9 @@ class RetinaNet(nn.Module):
                 matched_gt_boxes_i = gt_per_image.gt_boxes.tensor[matched_idxs]
 
                 gt_labels_i = gt_per_image.gt_classes[matched_idxs]
-                # Anchors with ori_annotation_file 0 are treated as background.
+                # Anchors with label 0 are treated as background.
                 gt_labels_i[anchor_labels == 0] = self.num_classes
-                # Anchors with ori_annotation_file -1 are ignored.
+                # Anchors with label -1 are ignored.
                 gt_labels_i[anchor_labels == -1] = -1
             else:
                 matched_gt_boxes_i = torch.zeros_like(anchors.tensor)
@@ -432,7 +432,7 @@ class RetinaNet(nn.Module):
             anchors (list[Boxes]): list of #feature levels. Each entry contains
                 a Boxes object, which contains all the anchors in that feature level.
             box_cls (list[Tensor]): list of #feature levels. Each entry contains
-                tensor of size (H features W features A, K)
+                tensor of size (H x W x A, K)
             box_delta (list[Tensor]): Same shape as 'box_cls' except that K becomes 4.
             image_size (tuple(H, W)): a tuple of the image height and width.
 
@@ -517,7 +517,7 @@ class RetinaNetHead(nn.Module):
 
         Args:
             input_shape (List[ShapeSpec]): input shape
-            num_classes (int): number of classes. Used to ori_annotation_file background proposals.
+            num_classes (int): number of classes. Used to label background proposals.
             num_anchors (int): number of generated anchors
             conv_dims (List[int]): dimensions for each convolution layer
             norm (str or callable):

@@ -61,7 +61,7 @@ def find_top_rpn_proposals(
     device = proposals[0].device
 
     # 1. Select top-k anchor for every level and every image
-    topk_scores = []  # #lvl Tensor, each of shape N features topk
+    topk_scores = []  # #lvl Tensor, each of shape N x topk
     topk_proposals = []
     level_ids = []  # #lvl Tensor, each of shape (topk,)
     batch_idx = torch.arange(num_images, device=device)
@@ -78,8 +78,8 @@ def find_top_rpn_proposals(
         topk_scores_i = logits_i.narrow(1, 0, num_proposals_i)
         topk_idx = idx.narrow(1, 0, num_proposals_i)
 
-        # each is N features topk
-        topk_proposals_i = proposals_i[batch_idx[:, None], topk_idx]  # N features topk features 4
+        # each is N x topk
+        topk_proposals_i = proposals_i[batch_idx[:, None], topk_idx]  # N x topk x 4
 
         topk_proposals.append(topk_proposals_i)
         topk_scores.append(topk_scores_i)

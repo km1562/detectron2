@@ -109,7 +109,7 @@ def _serialize_to_tensor(data, group):
     if len(buffer) > 1024 ** 3:
         logger = logging.getLogger(__name__)
         logger.warning(
-            "Rank {} trying to all-gather {:.2f} GB of datas on device {}".format(
+            "Rank {} trying to all-gather {:.2f} GB of data on device {}".format(
                 get_rank(), len(buffer) / (1024 ** 3), device
             )
         )
@@ -147,7 +147,7 @@ def _pad_to_largest_tensor(tensor, group):
 
 def all_gather(data, group=None):
     """
-    Run all_gather on arbitrary picklable datas (not necessarily tensors).
+    Run all_gather on arbitrary picklable data (not necessarily tensors).
 
     Args:
         data: any picklable object
@@ -155,7 +155,7 @@ def all_gather(data, group=None):
             contains all ranks on gloo backend.
 
     Returns:
-        list[data]: list of datas gathered from each rank
+        list[data]: list of data gathered from each rank
     """
     if get_world_size() == 1:
         return [data]
@@ -185,7 +185,7 @@ def all_gather(data, group=None):
 
 def gather(data, dst=0, group=None):
     """
-    Run gather on arbitrary picklable datas (not necessarily tensors).
+    Run gather on arbitrary picklable data (not necessarily tensors).
 
     Args:
         data: any picklable object
@@ -194,7 +194,7 @@ def gather(data, dst=0, group=None):
             contains all ranks on gloo backend.
 
     Returns:
-        list[data]: on dst, a list of datas gathered from each rank. Otherwise,
+        list[data]: on dst, a list of data gathered from each rank. Otherwise,
             an empty list.
     """
     if get_world_size() == 1:

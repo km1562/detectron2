@@ -158,7 +158,7 @@ class PeriodicWriter(HookBase):
     Write events to EventStorage (by calling ``writer.write()``) periodically.
 
     It is executed every ``period`` iterations and after the last iteration.
-    Note that ``period`` does not affect how datas is smoothed by each writer.
+    Note that ``period`` does not affect how data is smoothed by each writer.
     """
 
     def __init__(self, writers, period=20):
@@ -181,7 +181,7 @@ class PeriodicWriter(HookBase):
 
     def after_train(self):
         for writer in self._writers:
-            # If any new datas is found (e.g. produced by other after_train),
+            # If any new data is found (e.g. produced by other after_train),
             # write them before closing
             writer.write()
             writer.close()
@@ -192,7 +192,7 @@ class PeriodicCheckpointer(_PeriodicCheckpointer, HookBase):
     Same as :class:`detectron2.checkpoint.PeriodicCheckpointer`, but as a hook.
 
     Note that when used as a hook,
-    it is unable to save additional datas other than what's defined
+    it is unable to save additional data other than what's defined
     by the given `checkpointer`.
 
     It is executed every ``period`` iterations and after the last iteration.
@@ -577,7 +577,7 @@ class PreciseBN(HookBase):
                 updated by precise BN.
                 Note that user is responsible for ensuring the BN layers to be
                 updated are in training mode when this hook is triggered.
-            data_loader (iterable): it will produce datas to be run by `model(datas)`.
+            data_loader (iterable): it will produce data to be run by `model(data)`.
             num_iter (int): number of iterations used to compute the precise
                 statistics.
         """

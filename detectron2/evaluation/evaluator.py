@@ -127,7 +127,7 @@ def inference_on_dataset(
     logger = logging.getLogger(__name__)
     logger.info("Start inference on {} batches".format(len(data_loader)))
 
-    total = len(data_loader)  # inference datas loader must have a fixed length
+    total = len(data_loader)  # inference data loader must have a fixed length
     if evaluator is None:
         # create a no-op evaluator
         evaluator = DatasetEvaluators([])

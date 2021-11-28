@@ -69,7 +69,7 @@ class FirstKFramesSelector(Callable):  # pyre-ignore[39]
 
 class LastKFramesSelector(Callable):  # pyre-ignore[39]
     """
-    Selector that retains at most `k` last frames from video datas
+    Selector that retains at most `k` last frames from video data
     """
 
     def __init__(self, k: int):

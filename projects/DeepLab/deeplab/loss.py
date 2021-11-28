@@ -10,7 +10,7 @@ class DeepLabCE(nn.Module):
     Paper: DeeperLab: Single-Shot Image Parser
     Reference: https://github.com/tensorflow/models/blob/bd488858d610e44df69da6f89277e9de8a03722c/research/deeplab/utils/train_utils.py#L33  # noqa
     Arguments:
-        ignore_label: Integer, ori_annotation_file to ignore.
+        ignore_label: Integer, label to ignore.
         top_k_percent_pixels: Float, the value lies in [0.0, 1.0]. When its
             value < 1.0, only compute the loss for the top k percent pixels
             (e.g., the top 20% pixels). This is useful for hard pixel mining.

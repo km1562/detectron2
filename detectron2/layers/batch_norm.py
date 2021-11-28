@@ -20,8 +20,8 @@ class FrozenBatchNorm2d(nn.Module):
 
     The pre-trained backbone models from Caffe2 only contain "weight" and "bias",
     which are computed from the original four parameters of BN.
-    The affine transform `features * weight + bias` will perform the equivalent
-    computation of `(features - running_mean) / sqrt(running_var) * weight + bias`.
+    The affine transform `x * weight + bias` will perform the equivalent
+    computation of `(x - running_mean) / sqrt(running_var) * weight + bias`.
     When loading a backbone model from Caffe2, "running_mean" and "running_var"
     will be left unchanged as identity transformation.
 
@@ -105,10 +105,10 @@ class FrozenBatchNorm2d(nn.Module):
         if isinstance(module, bn_module):
             res = cls(module.num_features)
             if module.affine:
-                res.weight.datas = module.weight.datas.clone().detach()
-                res.bias.datas = module.bias.datas.clone().detach()
-            res.running_mean.datas = module.running_mean.datas
-            res.running_var.datas = module.running_var.datas
+                res.weight.data = module.weight.data.clone().detach()
+                res.bias.data = module.bias.data.clone().detach()
+            res.running_mean.data = module.running_mean.data
+            res.running_var.data = module.running_var.data
             res.eps = module.eps
         else:
             for name, child in module.named_children():

@@ -38,7 +38,7 @@ def rasterize_polygons_with_grid_sample(full_image_bit_mask, box, mask_size, thr
     img_h, img_w = full_image_bit_mask.shape
 
     mask_y = np.arange(0.0, mask_size) + 0.5  # mask y sample coords in [0.5, mask_size - 0.5]
-    mask_x = np.arange(0.0, mask_size) + 0.5  # mask features sample coords in [0.5, mask_size - 0.5]
+    mask_x = np.arange(0.0, mask_size) + 0.5  # mask x sample coords in [0.5, mask_size - 0.5]
     mask_y = mask_y / mask_size * (y1 - y0) + y0
     mask_x = mask_x / mask_size * (x1 - x0) + x0
 
@@ -99,7 +99,7 @@ class TestMaskCropPaste(unittest.TestCase):
         self.assertTrue(res_dic["roialign"]["aligned"] > 0.95)
 
     def process_annotation(self, ann, mask_side_len=28):
-        # Parse annotation datas
+        # Parse annotation data
         img_info = self.coco.loadImgs(ids=[ann["image_id"]])[0]
         height, width = img_info["height"], img_info["width"]
         gt_polygons = [np.array(p, dtype=np.float64) for p in ann["segmentation"]]

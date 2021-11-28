@@ -13,7 +13,7 @@ from .utils import resample_data
 class SegmentationLoss:
     """
     Segmentation loss as cross-entropy for raw unnormalized scores given ground truth
-    ori_annotation_file_list. Segmentation ground truth ori_annotation_file_list are defined for the bounding box of
+    labels. Segmentation ground truth labels are defined for the bounding box of
     interest at some fixed resolution [S, S], where
         S = MODEL.ROI_DENSEPOSE_HEAD.HEATMAP_SIZE.
     """
@@ -39,7 +39,7 @@ class SegmentationLoss:
         ground truth and estimated scores.
 
         Args:
-            proposals_with_gt (list of Instances): detections with associated ground truth datas
+            proposals_with_gt (list of Instances): detections with associated ground truth data
             densepose_predictor_outputs: an object of a dataclass that contains predictor outputs
                 with estimated values; assumed to have the following attributes:
                 * coarse_segm - coarse segmentation estimates, tensor of shape [N, D, S, S]
@@ -68,7 +68,7 @@ class SegmentationLoss:
 
     def fake_value(self, densepose_predictor_outputs: Any) -> torch.Tensor:
         """
-        Fake segmentation loss used when no suitable ground truth datas
+        Fake segmentation loss used when no suitable ground truth data
         was found in a batch. The loss has a value 0 and is primarily used to
         construct the computation graph, so that `DistributedDataParallel`
         has similar graphs on all GPUs and can perform reduction properly.

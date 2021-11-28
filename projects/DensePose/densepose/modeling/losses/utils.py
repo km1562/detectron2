@@ -34,7 +34,7 @@ def _linear_interpolation_utilities(v_norm, v0_src, size_src, v0_dst, size_dst, 
             left bounds of destination intervals
         size_dst (:obj: `torch.Tensor`): tensor of size N containing
             destination interval sizes
-        size_z (int): interval size for datas to be interpolated
+        size_z (int): interval size for data to be interpolated
 
     Returns:
         v_lo (:obj: `torch.Tensor`): int tensor of size N containing
@@ -197,7 +197,7 @@ def resample_data(
 ):
     """
     Args:
-        z (:obj: `torch.Tensor`): tensor of size (N,C,H,W) with datas to be
+        z (:obj: `torch.Tensor`): tensor of size (N,C,H,W) with data to be
             resampled
         bbox_xywh_src (:obj: `torch.Tensor`): tensor of size (N,4) containing
             source bounding boxes in format XYWH
@@ -244,17 +244,17 @@ class AnnotationsAccumulator(ABC):
     @abstractmethod
     def accumulate(self, instances_one_image: Instances):
         """
-        Accumulate instances datas for one image
+        Accumulate instances data for one image
 
         Args:
-            instances_one_image (Instances): instances datas to accumulate
+            instances_one_image (Instances): instances data to accumulate
         """
         pass
 
     @abstractmethod
     def pack(self) -> Any:
         """
-        Pack datas into tensors
+        Pack data into tensors
         """
         pass
 
@@ -264,7 +264,7 @@ class PackedChartBasedAnnotations:
     """
     Packed annotations for chart-based model training. The following attributes
     are defined:
-     - fine_segm_labels_gt (tensor [K] of `int64`): GT fine segmentation point ori_annotation_file_list
+     - fine_segm_labels_gt (tensor [K] of `int64`): GT fine segmentation point labels
      - x_gt (tensor [K] of `float32`): GT normalized X point coordinates
      - y_gt (tensor [K] of `float32`): GT normalized Y point coordinates
      - u_gt (tensor [K] of `float32`): GT point U values
@@ -275,10 +275,10 @@ class PackedChartBasedAnnotations:
      - bbox_xywh_est (tensor [N, 4] of `float32`): selected matching estimated
          bounding boxes in XYWH format
      - point_bbox_with_dp_indices (tensor [K] of `int64`): indices of bounding boxes
-         with DensePose annotations that correspond to the point datas
+         with DensePose annotations that correspond to the point data
      - point_bbox_indices (tensor [K] of `int64`): indices of bounding boxes
-         (not necessarily the selected ones with DensePose datas) that correspond
-         to the point datas
+         (not necessarily the selected ones with DensePose data) that correspond
+         to the point data
      - bbox_indices (tensor [N] of `int64`): global indices of selected bounding
          boxes with DensePose annotations; these indices could be used to access
          features that are computed for all bounding boxes, not only the ones with
@@ -323,10 +323,10 @@ class ChartBasedAnnotationsAccumulator(AnnotationsAccumulator):
 
     def accumulate(self, instances_one_image: Instances):
         """
-        Accumulate instances datas for one image
+        Accumulate instances data for one image
 
         Args:
-            instances_one_image (Instances): instances datas to accumulate
+            instances_one_image (Instances): instances data to accumulate
         """
         boxes_xywh_est = BoxMode.convert(
             instances_one_image.proposal_boxes.tensor.clone(), BoxMode.XYXY_ABS, BoxMode.XYWH_ABS
@@ -359,12 +359,12 @@ class ChartBasedAnnotationsAccumulator(AnnotationsAccumulator):
         self, box_xywh_gt: torch.Tensor, box_xywh_est: torch.Tensor, dp_gt: DensePoseDataRelative
     ):
         """
-        Accumulate instances datas for one image, given that the datas is not empty
+        Accumulate instances data for one image, given that the data is not empty
 
         Args:
             box_xywh_gt (tensor): GT bounding box
             box_xywh_est (tensor): estimated bounding box
-            dp_gt (DensePoseDataRelative): GT densepose datas
+            dp_gt (DensePoseDataRelative): GT densepose data
         """
         self.i_gt.append(dp_gt.i)
         self.x_gt.append(dp_gt.x)
@@ -384,7 +384,7 @@ class ChartBasedAnnotationsAccumulator(AnnotationsAccumulator):
 
     def pack(self) -> Optional[PackedChartBasedAnnotations]:
         """
-        Pack datas into tensors
+        Pack data into tensors
         """
         if not len(self.i_gt):
             # TODO:

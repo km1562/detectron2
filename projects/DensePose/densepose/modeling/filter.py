@@ -20,9 +20,9 @@ class DensePoseDataFilter(object):
         DensePose training
 
         Args:
-            features (list[Tensor]): input datas as a list of features,
+            features (list[Tensor]): input data as a list of features,
                 each feature is a tensor. Axis 0 represents the number of
-                images `N` in the input datas; axes 1-3 are channels,
+                images `N` in the input data; axes 1-3 are channels,
                 height, and width, which may vary between features
                 (e.g., if a feature pyramid is used).
             proposals_with_targets (list[Instances]): length `N` list of

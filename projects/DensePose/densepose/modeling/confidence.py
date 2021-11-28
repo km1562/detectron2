@@ -27,7 +27,7 @@ class DensePoseUVConfidenceType(Enum):
 @dataclass
 class DensePoseUVConfidenceConfig:
     """
-    Configuration options for confidence on UV datas
+    Configuration options for confidence on UV data
     """
 
     enabled: bool = False

@@ -22,7 +22,7 @@ class DatasetMapper:
     A callable which takes a dataset dict in Detectron2 Dataset format,
     and map it into a format used by the model.
 
-    This is the default callable to be used to map your dataset dict into training datas.
+    This is the default callable to be used to map your dataset dict into training data.
     You may need to follow it to implement your own one for customized logic,
     such as a different way to read or transform images.
     See :doc:`/tutorials/data_loading` for details.
@@ -31,7 +31,7 @@ class DatasetMapper:
 
     1. Read the image from "file_name"
     2. Applies cropping/geometric transforms to the image and annotations
-    3. Prepare datas and annotations to Tensor and :class:`Instances`
+    3. Prepare data and annotations to Tensor and :class:`Instances`
     """
 
     @configurable
@@ -120,7 +120,7 @@ class DatasetMapper:
             if not self.use_keypoint:
                 anno.pop("keypoints", None)
 
-        # USER: Implement additional transformations if you have other types of datas
+        # USER: Implement additional transformations if you have other types of data
         annos = [
             utils.transform_instance_annotations(
                 obj, transforms, image_shape, keypoint_hflip_indices=self.keypoint_hflip_indices
@@ -166,7 +166,7 @@ class DatasetMapper:
 
         image_shape = image.shape[:2]  # h, w
         # Pytorch's dataloader is efficient on torch.Tensor due to shared-memory,
-        # but not efficient on large generic datas structures due to the use of pickle & mp.Queue.
+        # but not efficient on large generic data structures due to the use of pickle & mp.Queue.
         # Therefore it's important to use torch.Tensor.
         dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
         if sem_seg_gt is not None:

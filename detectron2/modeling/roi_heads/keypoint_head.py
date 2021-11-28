@@ -98,7 +98,7 @@ def keypoint_rcnn_loss(pred_keypoint_logits, instances, normalizer):
 
 def keypoint_rcnn_inference(pred_keypoint_logits: torch.Tensor, pred_instances: List[Instances]):
     """
-    Post process each predicted keypoint heatmap in `pred_keypoint_logits` into (features, y, score)
+    Post process each predicted keypoint heatmap in `pred_keypoint_logits` into (x, y, score)
         and add it to the `pred_instances` as a `pred_keypoints` field.
 
     Args:
@@ -110,7 +110,7 @@ def keypoint_rcnn_inference(pred_keypoint_logits: torch.Tensor, pred_instances: 
     Returns:
         None. Each element in pred_instances will contain extra "pred_keypoints" and
             "pred_keypoint_heatmaps" fields. "pred_keypoints" is a tensor of shape
-            (#instance, K, 3) where the last dimension corresponds to (features, y, score).
+            (#instance, K, 3) where the last dimension corresponds to (x, y, score).
             The scores are larger than 0. "pred_keypoint_heatmaps" contains the raw
             keypoint logits as passed to this function.
     """
@@ -126,8 +126,8 @@ def keypoint_rcnn_inference(pred_keypoint_logits: torch.Tensor, pred_instances: 
     for keypoint_results_per_image, heatmap_results_per_image, instances_per_image in zip(
         keypoint_results, heatmap_results, pred_instances
     ):
-        # keypoint_results_per_image is (num instances)features(num keypoints)features(features, y, score)
-        # heatmap_results_per_image is (num instances)features(num keypoints)features(side)features(side)
+        # keypoint_results_per_image is (num instances)x(num keypoints)x(x, y, score)
+        # heatmap_results_per_image is (num instances)x(num keypoints)x(side)x(side)
         instances_per_image.pred_keypoints = keypoint_results_per_image
         instances_per_image.pred_keypoint_heatmaps = heatmap_results_per_image
 
@@ -180,7 +180,7 @@ class BaseKeypointRCNNHead(nn.Module):
         """
         Args:
             x: input 4D region feature(s) provided by :class:`ROIHeads`.
-            instances (list[Instances]): contains the boxes & ori_annotation_file_list corresponding
+            instances (list[Instances]): contains the boxes & labels corresponding
                 to the input features.
                 Exact format is up to its caller to decide.
                 Typically, this is the foreground instances in training, with

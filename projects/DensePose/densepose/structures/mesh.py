@@ -36,7 +36,7 @@ class Mesh:
                 vertex indices
             geodists (tensor [N, N] of float32): geodesic distances from
                 vertex `i` to vertex `j` (optional, default: None)
-            symmetry (dict: str -> tensor): various mesh symmetry datas:
+            symmetry (dict: str -> tensor): various mesh symmetry data:
                 - "vertex_transforms": vertex mapping under horizontal flip,
                   tensor of size [N] of type long; vertex `i` is mapped to
                   vertex `tensor[i]` (optional, default: None)

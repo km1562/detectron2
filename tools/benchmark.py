@@ -163,21 +163,21 @@ def benchmark_eval(args):
 
 if __name__ == "__main__":
     parser = default_argument_parser()
-    parser.add_argument("--task", choices=["train", "eval", "datas", "data_advanced"], required=True)
+    parser.add_argument("--task", choices=["train", "eval", "data", "data_advanced"], required=True)
     args = parser.parse_args()
     assert not args.eval_only
 
     logger.info("Environment info:\n" + collect_env_info())
-    if "datas" in args.task:
+    if "data" in args.task:
         print("Initial " + RAM_msg())
-    if args.task == "datas":
+    if args.task == "data":
         f = benchmark_data
     if args.task == "data_advanced":
         f = benchmark_data_advanced
     elif args.task == "train":
         """
         Note: training speed may not be representative.
-        The training cost of a R-CNN model varies with the content of the datas
+        The training cost of a R-CNN model varies with the content of the data
         and the quality of the model.
         """
         f = benchmark_train
