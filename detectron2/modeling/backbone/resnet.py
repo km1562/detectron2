@@ -438,6 +438,8 @@ class ResNet(Backbone):
             assert out_feature in children, "Available children: {}".format(", ".join(children))
         self.freeze(freeze_at)
         for i, stage in enumerate(self.stages):
+            if i == len(self.stages) - 1:
+                continue
             in_channel = 256
             self.stages[i].add_module('FPA_{0}'.format(i), FPA(in_channel * (2 ** i)))
 
