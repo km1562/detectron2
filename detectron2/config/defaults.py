@@ -502,7 +502,8 @@ _C.MODEL.RESNETS.DEFORM_MODULATED = False
 # Number of groups in deformable conv.
 _C.MODEL.RESNETS.DEFORM_NUM_GROUPS = 1
 
-
+#res2-res4 use 7 * 7, 5 * 5
+_C.MODEL.RESNETS.USE_FPA = True
 # ---------------------------------------------------------------------------- #
 # Solver
 # ---------------------------------------------------------------------------- #

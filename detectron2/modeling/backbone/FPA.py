@@ -1,5 +1,25 @@
 import torch
 import torch.nn as nn
+# Copyright (c) Facebook, Inc. and its affiliates.
+import numpy as np
+import fvcore.nn.weight_init as weight_init
+import torch
+import torch.nn.functional as F
+from torch import nn
+
+from detectron2.layers import (
+    CNNBlockBase,
+    Conv2d,
+    DeformConv,
+    ModulatedDeformConv,
+    ShapeSpec,
+    get_norm,
+)
+
+from .backbone import Backbone
+from .build import BACKBONE_REGISTRY
+from .resnet import BasicBlock,BottleneckBlock
+
 
 class FPA(nn.Module):
     def __init__(self, channels=2048):
@@ -7,7 +27,7 @@ class FPA(nn.Module):
         Feature Pyramid Attention
         :type channels: int
         """
-        super(FPA, self).__init__()
+        super(ResNet_FPA, self).__init__()
         channels_mid = int(channels/4)
 
         self.channels_cond = channels

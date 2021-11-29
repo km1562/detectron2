@@ -369,7 +369,7 @@ class ResNet(Backbone):
     Implement :paper:`ResNet`.
     """
 
-    def __init__(self, stem, stages, num_classes=None, out_features=None, freeze_at=0):
+    def __init__(self, stem, stages, num_classes=None, out_features=None, freeze_at=0, use_fpa=True):
         """
         Args:
             stem (nn.Module): a stem module
@@ -437,11 +437,12 @@ class ResNet(Backbone):
         for out_feature in self._out_features:
             assert out_feature in children, "Available children: {}".format(", ".join(children))
         self.freeze(freeze_at)
-        for i, stage in enumerate(self.stages):
-            if i == len(self.stages) - 1:
-                continue
-            in_channel = 256
-            self.stages[i].add_module('FPA_{0}'.format(i), FPA(in_channel * (2 ** i)))
+        if use_fpa:
+            for i, stage in enumerate(self.stages):
+                if i == len(self.stages) - 1:
+                    continue
+                in_channel = 256
+                self.stages[i].add_module('FPA_{0}'.format(i), FPA(in_channel * (2 ** i)))
 
 
     def forward(self, x):
@@ -704,5 +705,5 @@ def build_resnet_backbone(cfg, input_shape):
         out_channels *= 2
         bottleneck_channels *= 2
         stages.append(blocks)
-    bottom_up =  ResNet(stem, stages, out_features=out_features, freeze_at=freeze_at)
+        bottom_up =  ResNet(stem, stages, out_features=out_features, freeze_at=freeze_at, use_fpa=cfg.MODEL.RESNETS.USE_FPA)
     return bottom_up
