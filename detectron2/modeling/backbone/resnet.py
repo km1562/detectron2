@@ -16,6 +16,7 @@ from detectron2.layers import (
 
 from .backbone import Backbone
 from .build import BACKBONE_REGISTRY
+from .FPA import FPA
 
 __all__ = [
     "ResNetBlockBase",
@@ -27,6 +28,7 @@ __all__ = [
     "make_stage",
     "build_resnet_backbone",
 ]
+
 
 
 class BasicBlock(CNNBlockBase):
@@ -190,6 +192,7 @@ class BottleneckBlock(CNNBlockBase):
         # nn.init.constant_(self.conv3.norm.weight, 0)
         # TODO this somehow hurts performance when training GN models from scratch.
         # Add it as an option when we need to use this code to train a backbone.
+        # self.fpa = FPA(out_channels)
 
     def forward(self, x):
         out = self.conv1(x)
@@ -207,6 +210,8 @@ class BottleneckBlock(CNNBlockBase):
 
         out += shortcut
         out = F.relu_(out)
+        # out = self.fpa(out)
+
         return out
 
 
@@ -411,6 +416,7 @@ class ResNet(Backbone):
                 current_stride * np.prod([k.stride for k in blocks])
             )
             self._out_feature_channels[name] = curr_channels = blocks[-1].out_channels
+
         self.stage_names = tuple(self.stage_names)  # Make it static for scripting
 
         if num_classes is not None:
@@ -431,6 +437,10 @@ class ResNet(Backbone):
         for out_feature in self._out_features:
             assert out_feature in children, "Available children: {}".format(", ".join(children))
         self.freeze(freeze_at)
+        for i, stage in enumerate(self.stages):
+            in_channel = 256
+            self.stages[i].add_module('FPA_{0}'.format(i), FPA(in_channel * (2 ** i)))
+
 
     def forward(self, x):
         """
@@ -542,6 +552,7 @@ class ResNet(Backbone):
                 block_class(in_channels=in_channels, out_channels=out_channels, **curr_kwargs)
             )
             in_channels = out_channels
+        # blocks.append(FPA(in_channels))
         return blocks
 
     @staticmethod
@@ -691,4 +702,5 @@ def build_resnet_backbone(cfg, input_shape):
         out_channels *= 2
         bottleneck_channels *= 2
         stages.append(blocks)
-    return ResNet(stem, stages, out_features=out_features, freeze_at=freeze_at)
+    bottom_up =  ResNet(stem, stages, out_features=out_features, freeze_at=freeze_at)
+    return bottom_up
