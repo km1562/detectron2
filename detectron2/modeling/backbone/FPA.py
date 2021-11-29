@@ -27,7 +27,7 @@ class FPA(nn.Module):
         Feature Pyramid Attention
         :type channels: int
         """
-        super(ResNet_FPA, self).__init__()
+        super(FPA, self).__init__()
         channels_mid = int(channels/4)
 
         self.channels_cond = channels
