@@ -444,7 +444,6 @@ class ResNet(Backbone):
                 in_channel = 256
                 self.stages[i].add_module('FPA_{0}'.format(i), FPA(in_channel * (2 ** i)))
 
-
     def forward(self, x):
         """
         Args:
